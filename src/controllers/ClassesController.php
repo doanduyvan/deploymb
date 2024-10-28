@@ -18,14 +18,14 @@ class ClassesController
     {
         $this->layout->setTitle('Classes - AnhNguMB');
         $this->layout->setActivePage(2);
-        $this->layout->templatehtml = file_get_contents('public/temphtml/tempUser/joinclass.html');
+        $this->layout->templatehtml = file_get_contents('public/temphtml/tempuser/joinclass.html');
         $this->layout->render();
     }
 
     public function myclass(){
         $this->layout->setTitle('My Classes - AnhNguMB');
         $this->layout->setActivePage(2,2.1);
-        $this->layout->templatehtml = file_get_contents('public/temphtml/tempUser/myclass.html');
+        $this->layout->templatehtml = file_get_contents('public/temphtml/tempuser/myclass.html');
         $this->layout->render();
     }
 

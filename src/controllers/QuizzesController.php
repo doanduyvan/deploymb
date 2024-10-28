@@ -21,7 +21,7 @@ class QuizzesController
         $quiz = new ViewLayout();
         $quiz->setTitle('Quizzes - Anh Ngữ MB');
         $quiz->setActivePage(5);
-        $quiz->templatehtml = file_get_contents('public/temphtml/tempUser/filterquiz.html');
+        $quiz->templatehtml = file_get_contents('public/temphtml/tempuser/filterquiz.html');
 
         // $quiz->templatehtml = file_get_contents('public/temphtml/tempUser/quiz.html');
         // $quiz->addCSS('public/css/Users/Quiz.css');
@@ -33,7 +33,7 @@ class QuizzesController
         $quiz = new ViewLayout();
         $quiz->setTitle('Quizzes - Anh Ngữ MB');
         $quiz->setActivePage(5);
-        $quiz->templatehtml = file_get_contents('public/temphtml/tempUser/quiz.html');
+        $quiz->templatehtml = file_get_contents('public/temphtml/tempuser/quiz.html');
         $quiz->render();
     }
 
