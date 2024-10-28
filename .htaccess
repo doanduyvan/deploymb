@@ -2,7 +2,7 @@ RewriteEngine on
 
 
 RewriteCond %{THE_REQUEST} /index\.php [NC]
-RewriteRule ^(.*)index\.php$ /anhngumb/anhngumb_v1/ [L,R=301]
+RewriteRule ^(.*)index\.php$ / [L,R=301]
 
 # dành cho hosting
 #RewriteRule ^(.*)index\.php$ /$1 [L,R=301]
