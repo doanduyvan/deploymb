@@ -10,7 +10,7 @@ class ClassesControllerAdmin
 
     function __construct()
     {
-        $this->classModel = new \Models\classModel();
+        $this->classModel = new \Models\ClassModel();
     }
 
     function index()
