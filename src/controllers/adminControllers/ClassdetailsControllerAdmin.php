@@ -12,7 +12,7 @@ class ClassdetailsControllerAdmin
 
     function __construct()
     {
-        $this->classAccModel = new \Models\ClassdetailModel();
+        $this->classAccModel = new \Models\ClassDetailModel();
     }
 
     function index()
