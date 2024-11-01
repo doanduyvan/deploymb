@@ -3,15 +3,15 @@ const divRoot = document.getElementById("root");
 const addClassTemplate = `
     <div class="dv-content">
         <div class="addClass show">
-            <button class="btn btn-primary btn-addClass">Add Lesson</button>
+            <button class="btn btn-primary btn-addClass">Add Class</button>
             <div class="addClass-box">
                 <form action="" class="addClass-form">
         <div class="fromGroup">
-            <label for="className" class="formLabel">Lesson Name</label>
+            <label for="className" class="formLabel">Class Name</label>
             <input type="text" id="className" name="className" class="formInput" placeholder="Enter lesson name">
         </div>
         <div class="fromGroup">
-            <label for="courseId" class="formLabel">Courses ID</label>
+            <label for="courseId" class="formLabel">Courses</label>
             <select id="courseId" name="courseId" class="formInput">
                 <option value="">Select Course ID</option>
             </select>
