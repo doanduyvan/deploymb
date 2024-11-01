@@ -11,7 +11,7 @@ class AccessclassControllerAdmin
     private $pathjs = 'public/js/Admin/';
     function __construct()
     {
-        $this->classAccModel = new \Models\AccessclassModel();
+        $this->classAccModel = new \Models\AccessClassModel();
     }
 
     function index()
