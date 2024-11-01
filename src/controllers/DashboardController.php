@@ -3,16 +3,18 @@ namespace Controllers;
 
 class DashboardController{
     private $classModel;
+    private $pathcss = 'public/css/Users/';
+    private $pathjs = 'public/js/Users/';
     function __construct()
     {
         $this->classModel = new \Models\DashboardModel();
     }
     function index(){
         $dashboard = new \Views\ViewLayout(); 
-        $dashboard->setTitle('day la trang dashboard');
+        $dashboard->setTitle('Dashboard - Anh Ngữ BM');
         $dashboard->setActivePage(1);
         $dashboard->addCSS('public/css/Admin/dashboardAdmin.css');
-        $dashboard->addJS('public/js/Users/dashboard.js');
+        $dashboard->addJS($this->pathjs . 'dashboard.js');
         $dashboard->render();
     }
     function getCountStudentStatus(){

@@ -56,10 +56,12 @@ const templateroot = `
         <div class="dv-change-pass-container"></div>
     `;
 divRoot.innerHTML = templateroot;
+
+
 async function fetAccount() {
   const url = "admin/profile/getaccount";
   try {
-    const accountData = await mbFetch(url); 
+    const accountData = await mbFetch(url);
     if (accountData.error) {
       console.error("Error fetching account data:", accountData.error);
       mbNotification("Error", "Failed to fetch account data", 3);
@@ -91,32 +93,36 @@ saveButton.addEventListener("click", async function (e) {
     name: name,
     id: id,
   };
-  console.log(formData);
+  if(!name){
+    mbNotification("Warrning", "Please enter all required fields", 3);
+    return;
+  }
+  if(name.length < 3){
+    mbNotification("Warrning", "Name must be greater than 3 characters", 3);
+    return;
+  }
   try {
-    const updateResponse = await mbFetch(
-      "admin/profile/updateAccount",
-      formData
-    ); // Gửi yêu cầu cập nhật
-    console.log("Update response:", updateResponse);
+    const updateResponse = await mbFetch("admin/profile/updateAccount", formData); // Gửi yêu cầu cập nhật
     if (updateResponse.error) {
-      mbNotification("Error", updateResponse.error, 3);
+      mbNotification("Error", updateResponse.error, 2,2);
     } else {
       mbNotification("Success", "Account updated successfully", 1);
-
       // Cập nhật giao diện
       nameInput.value = updateResponse.fullName;
-
       // Cập nhật ảnh đại diện nếu người dùng đã chọn ảnh mới
       if (updateResponse.profileImage) {
         const imgPreview = document.querySelector(".form-group img");
         imgPreview.src = updateResponse.profileImage; // Cập nhật ảnh đại diện
       }
+      const userNameGlobal = document.getElementById("userNameGlobal");
+      userNameGlobal.innerText = updateResponse.fullName;
     }
   } catch (err) {
     console.error("Error updating account:", err);
     mbNotification("Error", "Failed to update account", 3);
   }
 });
+
 async function fetChangepass() {
   const url = "admin/profile/getaccount";
   try {
@@ -127,16 +133,17 @@ async function fetChangepass() {
     return null;
   }
 }
+
 const changePassButton = document.querySelector(".btn-change");
 changePassButton.onclick = async function () {
   const data = await fetChangepass();
-  if(data){
-    console.log(data);
+  if (data) {
     showChangePasswordForm(data);
-  }else{
+  } else {
     mbNotification("Error", "Không có dữ liệu tài khoản", 3);
   }
 };
+
 function showChangePasswordForm(account) {
   return new Promise((resolve) => {
     const box = document.querySelector(".dv-change-pass-container");
@@ -144,23 +151,41 @@ function showChangePasswordForm(account) {
     boxcontent.classList.add("dv-change");
     boxcontent.innerHTML = `
             <form class="formChangePass">
+              <input type="text" value="${account.id}" hidden name="id">
               <div class="formGroup">
                 <label for="currentPassword" class="formLabel">Current Password</label>
-                <input type="password" id="currentPassword" class="formInput" placeholder="Enter current password">
+                <input type="password" id="currentPassword" class="formInput" name="oldPass" placeholder="Enter current password">
               </div>
               <div class="formGroup">
                 <label for="newPassword" class="formLabel">New Password</label>
-                <input type="password" id="newPassword" class="formInput" placeholder="Enter new password">
+                <input type="password" id="newPassword" class="formInput" name="newPass" placeholder="Enter new password">
               </div>
               <div class="formGroup">
                 <label for="confirmPassword" class="formLabel">Confirm New Password</label>
-                <input type="password" id="confirmPassword" class="formInput" placeholder="Confirm new password">
+                <input type="password" id="confirmPassword" class="formInput" name="confirmPass" placeholder="Confirm new password">
+              </div>
+              <div>
+                <label for="showPass"><input id="showPass" type="checkbox"> Show</label>
               </div>
               <button class="btn btn-green">Change Password</button>
             </form>
         `;
 
     const formChangePass = boxcontent.querySelector(".formChangePass");
+
+    const showPass = boxcontent.querySelector("#showPass");
+    showPass.onchange = function (e) {
+      const isCheck = e.target.checked;
+      if(isCheck){
+        boxcontent.querySelectorAll(".formInput").forEach(input => {
+          input.type = "text";
+        });
+      }else{
+        boxcontent.querySelectorAll(".formInput").forEach(input => {
+          input.type = "password";
+        });
+      }
+    };
 
     boxcontent.onclick = function (e) {
       if (!formChangePass.contains(e.target)) {
@@ -171,10 +196,8 @@ function showChangePasswordForm(account) {
 
     formChangePass.onsubmit = async function (e) {
       e.preventDefault();
-      const currentPassword = document.getElementById("currentPassword").value;
-      const newPassword = document.getElementById("newPassword").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-
+      const formData1 = mbFormData(formChangePass);
+      const {id, oldPass : currentPassword, newPass : newPassword, confirmPass : confirmPassword } = formData1;
       if (!currentPassword || !newPassword || !confirmPassword) {
         mbNotification("Error", "Please enter all required fields", 3);
         return;
@@ -183,26 +206,21 @@ function showChangePasswordForm(account) {
         mbNotification("Error", "New password must be greater than 3 characters", 3);
         return;
       }
-
       if (newPassword !== confirmPassword) {
         mbNotification("Error", "New passwords do not match", 3);
         return;
       }
-      if (currentPassword !== account.pass) {
-        mbNotification("Error", "Current password is incorrect", 3);
-        return;
-      }
+
       const formData = {
-        accountId: account.id,
+        accountId: id,
         currentPassword: currentPassword,
         newPassword: newPassword,
       };
-      console.log(formData);
-      const urlChangePass = "admin/Profile/changepassword";
+ 
+      const urlChangePass = "admin/profile/changepassword";
       const data = await mbFetch(urlChangePass, formData);
       boxcontent.remove();
       if (data.error) {
-        console.log(data.error);
         mbNotification("Error", data.error, 2, 2);
         resolve(null);
       } else {

@@ -3,44 +3,20 @@ namespace AdminControllers;
 
 class DashboardControllerAdmin{
     private $classModel;
+    private $pathcss = 'public/css/Admin/';
+    private $pathjs = 'public/js/Admin/';
     function __construct()
     {
         $this->classModel = new \Models\DashboardModel();
     }
     function index(){
         $dashboard = new \Views\ViewLayout(); 
-        $dashboard->setTitle('day la trang dashboard');
+        $dashboard->setTitle('dashboard - Admin');
         $dashboard->setActivePage(1);
-        $dashboard->addCSS('public/css/Admin/dashboardAdmin.css');
-        $dashboard->addJS('public/js/Admin/dashBoardAdmin.js');
+        $dashboard->addCSS( $this->pathcss . 'dashboardAdmin.css');
+        $dashboard->addJS( $this->pathjs . 'dashBoardAdmin.js');
         $dashboard->render();
     }
-
-    // Dưới đây là các phương thức dành cho JSON API
-    // function getcourse(){
-
-    //     $course = [
-    //         [
-    //             'id' => 1,
-    //             'name' => 'Lập trình PHP',
-    //             'description' => 'Học lập trình PHP cơ bản',
-    //             'price' => 1000000
-    //         ],
-    //         [
-    //             'id' => 1,
-    //             'name' => 'Lập trình java',
-    //             'description' => 'Học lập trình PHP cơ bản',
-    //             'price' => 1000000
-    //         ],
-    //         [
-    //             'id' => 1,
-    //             'name' => 'Lập trình python',
-    //             'description' => 'Học lập trình PHP cơ bản',
-    //             'price' => 1000000
-    //         ],
-    //     ];
-    //     echo json_encode($course);
-    // }
 
 
     function getCountClass(){

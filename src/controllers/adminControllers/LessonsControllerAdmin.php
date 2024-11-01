@@ -7,6 +7,8 @@ use Views\ViewLayout;
 class LessonsControllerAdmin
 {
     private $lessonModel;
+    private $pathcss = 'public/css/Admin/';
+    private $pathjs = 'public/js/Admin/';
 
     function __construct()
     {
@@ -18,8 +20,8 @@ class LessonsControllerAdmin
         $lesson = new ViewLayout();
         $lesson->setTitle('Danh sách khóa học');
         $lesson->setActivePage(7);
-        $lesson->addCSS('public/css/Admin/lessonAdmin.css');
-        $lesson->addJS('public/js/Admin/lessonAdmin.js');
+        $lesson->addCSS( $this->pathcss . 'lessonAdmin.css');
+        $lesson->addJS( $this->pathjs . 'lessonAdmin.js');
         $lesson->render();
     }
 

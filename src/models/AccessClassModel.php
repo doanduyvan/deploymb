@@ -2,8 +2,6 @@
 
 namespace Models;
 
-use Google\Service\CloudControlsPartnerService\Console;
-
 class AccessClassModel
 {
 
@@ -23,7 +21,11 @@ class AccessClassModel
     }
     public function getAccessStatuss($currentClass)
     {
-        $classId = $currentClass['classId'];
+        if ($currentClass !== null && isset($currentClass['classId'])) {
+            $classId = $currentClass['classId'];
+        } else {
+            $classId = null;
+        }
         $conditions = [];
         if($classId !== null){
             $conditions[] = "ac.idClasses = $classId";
@@ -34,7 +36,9 @@ class AccessClassModel
             where ac.statuss = 0 ";
             if (count($conditions) > 0) {
                 $sql .= "AND " . implode(  $conditions);
-            }
+            }else{
+                $sql .= "ORDER BY ac.createdAt DESC";
+            };
         $stmt = $this->conn->query($sql);
         $result = $stmt->fetch_all(MYSQLI_ASSOC);
         return [
@@ -55,10 +59,14 @@ class AccessClassModel
     public function deleteAccessStatus($dataRow)
     {
         $classDetailId = $dataRow['idStudent'];
-        $sql = "DELETE FROM $this->table WHERE idAccounts = $classDetailId";
+        $classId = $dataRow['idClass'];
+        $sql = "DELETE FROM $this->table WHERE idAccounts = $classDetailId and idClasses = $classId";
         try {
             $this->conn->begin_transaction();
-            $this->conn->query($sql);
+            $check = $this->conn->query($sql);
+            if (!$check) {
+                throw new \Exception($this->conn->error);
+            }
             $this->conn->commit();
             return true;
         } catch (\Exception $e) {
@@ -70,17 +78,16 @@ class AccessClassModel
     }
     public function subaccessStatus($dataRow)
     {
-        // if (!empty($dataRow['idStudent']) && is_array($dataRow['idStudent'])) {
-        // }
         try {
-
             $this->conn->begin_transaction();
-
             foreach ($dataRow as $item) {
                 $idUser = $item['idUser'];
                 $idClass = $item['idClass'];
                 $sql = "UPDATE $this->table SET statuss = 1 WHERE idAccounts = $idUser and idClasses = $idClass";
-                $this->conn->query($sql);
+                $check = $this->conn->query($sql);
+                if (!$check) {
+                    throw new \Exception($this->conn->error);
+                }
             }
             $this->conn->commit();
             return true;

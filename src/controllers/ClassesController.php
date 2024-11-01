@@ -6,6 +6,8 @@ class ClassesController
     private $courseModel = null;
     private $classModel = null;
     private $classDetailModel = null;
+    private $pathcss = 'public/css/Users/';
+    private $pathjs = 'public/js/Users/';
     public function __construct()
     {
         $this->layout = new \Views\ViewLayout();
@@ -18,14 +20,24 @@ class ClassesController
     {
         $this->layout->setTitle('Classes - AnhNguMB');
         $this->layout->setActivePage(2);
-        $this->layout->templatehtml = file_get_contents('public/temphtml/tempuser/joinclass.html');
+        $this->layout->addCSS($this->pathcss . 'joinclass.css');
+        $this->layout->addJS($this->pathjs . 'joinclass.js');
         $this->layout->render();
     }
 
     public function myclass(){
         $this->layout->setTitle('My Classes - AnhNguMB');
         $this->layout->setActivePage(2,2.1);
-        $this->layout->templatehtml = file_get_contents('public/temphtml/tempuser/myclass.html');
+        $this->layout->addCSS($this->pathcss . 'myclass.css');
+        $this->layout->addJS($this->pathjs . 'myclass.js');
+        $this->layout->render();
+    }
+
+    public function progress(){
+        $this->layout->setTitle('Progress - AnhNguMB');
+        $this->layout->setActivePage(2);
+        $this->layout->addCSS($this->pathcss . 'progress.css');
+        $this->layout->addJS($this->pathjs . 'progress.js');
         $this->layout->render();
     }
 
@@ -36,11 +48,6 @@ class ClassesController
         $courses = $this->courseModel->getAllCourses();
         echo json_encode($courses);
     }
-
-    // function getclassbycourse($idCouse){
-    //     $classes = $this->classModel->getClassByCourse($idCouse);
-    //     echo json_encode($classes);
-    // }
 
     function getClassDetailByCourseClass($idCourse = null){
         $idUser = \Cores\Authentication::getId();
@@ -78,5 +85,11 @@ class ClassesController
         $idUser = \Cores\Authentication::getId();
         $classes = $this->classModel->getClassJoinedAndPending($idUser,0);
         echo json_encode($classes);
+    }
+
+    function getprogressbyclass($idClass){
+        $idUser = \Cores\Authentication::getId();
+        $progress = $this->classModel->getProgressByClass($idUser, $idClass);
+        echo json_encode($progress);
     }
 }

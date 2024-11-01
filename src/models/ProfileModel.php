@@ -15,30 +15,28 @@ class ProfileModel
 
     public function getAccount()
     {
-        if (isset($_SESSION['id'])) {
-            $user_id = $_SESSION['id'];
-            $sql = "SELECT * FROM $this->table WHERE id = '$user_id' AND statuss = 1";
+        $idUser = \Cores\Authentication::getId();
+        if ($idUser !== null) {
+            $user_id = $idUser;
+            $sql = "SELECT * FROM $this->table WHERE id = $user_id AND statuss = 1";
             try {
-                $this->conn->begin_transaction();
                 $this->conn->query($sql);
-                $this->conn->commit();
                 $result = $this->conn->query($sql);
-                if ($result) {
-                    $row = $result->fetch_assoc();
-                    if ($row) {
-                        return $row;
-                    } else {
-                        return "Không tìm thấy tài khoản.";
-                    }
+                if($result->num_rows == 0){
+                    throw new \Exception("Account not found");
                 }
+                $row = $result->fetch_assoc();
+                unset($row['pass']);
+                return $row;
             } catch (\Exception $e) {
-                $this->conn->rollback();
                 return [
                     'error' => $e->getMessage()
                 ];
             }
         } else {
-            echo "No user token found.";
+            return [
+                'error' => 'Account not found'
+            ];
         }
     }
 
@@ -47,12 +45,18 @@ class ProfileModel
     {
         $user_id = $dataRow['id'];
         $fullName = $dataRow['name'];
+        $fullName = $this->conn->real_escape_string($fullName);
         $sql = "UPDATE $this->table SET fullName = '$fullName' WHERE id = $user_id";
         try {
             $this->conn->begin_transaction();
-            $this->conn->query($sql);
+            $check = $this->conn->query($sql);
+            if (!$check) {
+                throw new \Exception("Update failed.");
+            }
             $newClass = $this->getAccountById($user_id);
             $this->conn->commit();
+            unset($newClass['pass']);
+            $_SESSION['acc']['fullName'] = $newClass['fullName'];
             return $newClass;
         } catch (\Exception $e) {
             $this->conn->rollback();
@@ -69,13 +73,40 @@ class ProfileModel
         $account = $stmt->fetch_assoc();
         return $account;
     }
+
     public function changepassword($datareq)
     {
         $id = $datareq['accountId'];
         $currenPassword = $datareq['currentPassword'];
         $newPassword = $datareq['newPassword'];
-        $sql = "UPDATE $this->table SET pass = '$newPassword' where id = '$id' and pass = '$currenPassword'";
-        $stmt = $this->conn->query($sql);
-        return $stmt;
+        $account = $this->getAccountById($id);
+        if($account === null){
+            return [
+                'error' => 'Account not found'
+            ];
+        }
+        if($account['pass'] !== $currenPassword){
+            return [
+                'error' => 'Current password is incorrect'
+            ];
+        }
+
+        try{
+            $newPassword = $this->conn->real_escape_string($newPassword);
+            $this->conn->begin_transaction();
+            $sql = "UPDATE $this->table SET pass = '$newPassword' where id = $id";
+            $stmt = $this->conn->query($sql);
+            if(!$stmt){
+                throw new \Exception('Update password failed');
+            }
+            $this->conn->commit();
+            return [
+                'success' => 'Password updated'
+            ];
+        }catch(\Exception $e){
+            return [
+                'error' => $e->getMessage()
+            ];
+        }
     }
 }

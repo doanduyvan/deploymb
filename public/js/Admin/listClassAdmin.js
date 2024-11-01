@@ -39,6 +39,7 @@ const listClassTemplate = `
                         <th>Class Name</th>
                         <th>List Student</th>
                         <th>Access Class</th>
+                        <th>Progress</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -255,7 +256,8 @@ function itemtr(item) {
                   <td>${item.courseName}</td>
                   <td>${item.className}</td>
                    <td><a class="link_detail" href="admin/classdetails?classId=${item.id}">Detail (${item.inclass})</a></td> 
-                   <td><a class="link_detail" href="admin/accessclass?classId=${item.id}">Pending (${item.pending})</a></td>  
+                   <td><a class="link_detail" href="admin/accessclass?classId=${item.id}">Pending (${item.pending})</a></td> 
+                    <td><a class="link_detail" href="admin/classes/progress?class=${item.id}">Progress</a></td> 
                   <td>
                     <label class="toggle-switch">
                       <input type="checkbox" id="toggleSwitch-${item.id}">

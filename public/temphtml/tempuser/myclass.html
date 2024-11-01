@@ -118,6 +118,30 @@
     .dv-content .dv-box.show-class .box-class.joined .stt>span {
         color: green;
     }
+
+    .btn_quiz_pro{
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+    .btn_quiz_pro a{
+        display: block;
+        flex: 1;
+        text-align: center;
+        padding: 5px 10px;
+        background-color: green;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn_quiz_pro a:hover{
+        background-color: rgb(0, 107, 0);
+    }
+
+    .hidden{
+        display: none;
+    }
+
 </style>
 
 
@@ -133,7 +157,7 @@
 
     <div class="dv-box show-class" id="listClass">
         <!-- <h3>Please choose course</h3> -->
-        <div class="box-class nojoin">
+        <!-- <div class="box-class nojoin">
             <h3 class="classname">K198</h3>
             <p class="course">Course: <span>Course 1</span></p>
             <p>Students: <span>30</span></p>
@@ -161,7 +185,7 @@
             <p class="course">Course: <span>Course 1</span></p>
             <p>Students: <span>30</span></p>
             <p class="stt">Status: <span>Joined</span></p>
-        </div>
+        </div> -->
 
     </div>
 </div>
@@ -236,18 +260,20 @@
     }
 
     function componentClass(classDetail, btn = false) {
-
+        console.log('classDetail', classDetail);
         let objectinfo = {}
 
         if(btn){
             objectinfo = {
                 status: 'pending',
-                text: 'Pending enrollment'
+                text: 'Pending enrollment',
+                idClass: classDetail.idClass
             }
         }else{
             objectinfo = {
                 status: 'joined',
-                text: 'Joined'
+                text: 'Joined',
+                idClass: classDetail.idClass
             }
         }
 
@@ -259,6 +285,10 @@
     <p class="course">Course: <span>${classDetail.courseName}</span></p>
     <p>Members: <span>${classDetail.quantityStudent}</span></p>
     <p class="stt">Status: <span>${objectinfo.text}</span></p>
+        <div class="btn_quiz_pro${btn ? ' hidden' : ''}">
+            <a href="quizzes?class=${objectinfo.idClass}">Quizzes</a>
+            <a href="classes/progress?class=${objectinfo.idClass}">Progress</a>
+        </div>
     `;
 
     if (btn) {

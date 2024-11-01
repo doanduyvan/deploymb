@@ -112,17 +112,17 @@ proxyCourse.currentPage = 1;
 
 
 // lấy danh sách khóa học
-
+let Courses = [];
 ( async ()=>{
     const url = "admin/courses/getallcourses";
     try {
-        const data = await mbFetch(url);
+        Courses = await mbFetch(url);
         const selectCourses = document.getElementById("selectCourses");
         const option = document.createElement("option");
         option.value = "";
         option.textContent = "All Courses";
         selectCourses.appendChild(option);
-        data.forEach((item) => {
+        Courses.forEach((item) => {
             const option = document.createElement("option");
             option.value = item.id;
             option.textContent = item.courseName;
@@ -164,7 +164,6 @@ async function renderLesson() {
   const tbdylesson = document.createElement("tbody");
   tbdylesson.id = "tbody-lesson";
   data.forEach((item) => {
-    console.log(item);
     const tr = itemtr(item);
     tbdylesson.appendChild(tr);
   });
@@ -248,7 +247,13 @@ function showFormEditLesson(data) {
                   <div class="fromGroup">
                       <label for="" class="formLabel">Nhập tên khóa học</label>
                       <input type="text" value="${data.id}" name="id" hidden>
-                      <input type="text" value="${data.lessonName}" name="lessonName" class="formInput" placeholder="">
+                      <input type="text" value="${data.lessonName}" name="lessonName" class="formInput" placeholder="">\
+                      <div class="fromGroup">
+                      <label for="courseId" class="formLabel">Courses ID</label>
+                      <select id="courseId" name="courseId" class="formInput">
+
+                      </select>
+                    </div>
                   </div>
                   <button class="btn btn-primary">Accept</button>
               </form>
@@ -260,9 +265,20 @@ function showFormEditLesson(data) {
         resolve(null);
       }
     };
+   const EselectCourses = boxcontent.querySelector("#courseId");
+   Courses.forEach((course) => {
+     const option = document.createElement("option");
+     option.value = course.id;
+     option.textContent = course.courseName;
+     EselectCourses.appendChild(option);
+     if(course.id == data.idCourses){
+       option.selected = true;
+     }
+   });
     formEdit.onsubmit = async function (e) {
       e.preventDefault();
       const formData = mbFormData(formEdit);
+      console.log(formData);
       if (formData.lessonName === "") {
         mbNotification("Error", "Please enter course name", 3);
         return;
@@ -275,6 +291,10 @@ function showFormEditLesson(data) {
         mbNotification("Error", data.error, 2, 2);
         resolve(null);
       } else {
+        const course = coursesGlobal.find(course => course.id == formData.courseId);
+        if (course) {
+          data.courseName = course.courseName;
+        }
         mbNotification("Success", "Edit success", 1, 2);
         resolve(data);
       }

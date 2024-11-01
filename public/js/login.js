@@ -70,7 +70,6 @@ formSignIn.addEventListener('submit', async (e) => {
         }
         formSignIn.reset();
         showNotif('Success', datares.message, 0, 1000);
-        console.log(datares);
         setTimeout(() => { window.location.reload() }, 1000);
     }catch(error){
         console.error(error);
@@ -113,7 +112,6 @@ formSignUp.addEventListener('submit', async (e) => {
     try {
         loading(true);
         const datares = await mbFetch('?signup', formData);
-        console.log(datares);
         if(datares.error){
             showNotif('Error', datares.error, 2, 2000);
             return;
@@ -166,7 +164,6 @@ async function getTokenGoogle(){
         loading(true);
         const remember = document.getElementById('remember').checked;
         const datares = await mbFetch('?signinGoogle',{idToken: id_token, rememberMe: remember});
-        console.log(datares);
         if(datares.error){
             showNotif('Error', datares.error, 2, 2000);
             removeTokensFromUrl();

@@ -104,6 +104,15 @@ class QuizzesCMSModel{
             $questionModel = new QuestionCMSModel();
             $questions = $questionModel->getQuestionByIdQuiz($idQuiz);
             $quizzes['questionsCMS'] = $questions;
+            $quizzes['result'] = null;
+
+            $resultModel = new ResultCMSModel();
+            $result = $resultModel->getIdResult($idUser,$idClass,$idQuiz,true);
+            if($result !== null){
+                $quizzes['result']['score'] = $result['score'];
+                $detail = $resultModel->getResultDetailByIdResult($result['id']);
+                $quizzes['result']['detail'] = $detail;
+            }
 
             return $quizzes;
 

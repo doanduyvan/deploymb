@@ -275,7 +275,18 @@ flex: 2;
     user-select: none;
 }
 
+.link_detail{
+   box-shadow: 0 0 5px #ccc;
+   border-radius: 5px;
+   display: block;
+   padding: 10px;
+   text-align: center;
+   font-weight: 500;
+   transition: all 0.1s ease-in-out;
+}
+
 .link_detail:hover{
-    color: blue;
-    text-decoration: underline;
+    background-color: rgb(243, 243, 243);
+    box-shadow: 0 0 5px #ccc,
+               inset -2px -2px 5px #ccc;
 }

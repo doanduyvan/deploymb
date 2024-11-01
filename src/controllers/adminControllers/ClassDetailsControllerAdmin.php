@@ -7,6 +7,8 @@ use Views\ViewLayout;
 class ClassdetailsControllerAdmin
 {
     private $classAccModel;
+    private $pathcss = 'public/css/Admin/';
+    private $pathjs = 'public/js/Admin/';
 
     function __construct()
     {
@@ -18,10 +20,11 @@ class ClassdetailsControllerAdmin
         $class = new ViewLayout();
         $class->setTitle('Danh sách học viên');
         $class->setActivePage(2);
-        $class->addCSS('public/css/Admin/classAdmin.css');
-        $class->addJS('public/js/Admin/classDetailsAdmin.js');
+        $class->addCSS($this->pathcss . 'classAdmin.css');
+        $class->addJS($this->pathjs . 'classDetailsAdmin.js');
         $class->render();
     }
+    
     public function getclassdetails() 
     {
         if (isset($_GET['classId'])) {

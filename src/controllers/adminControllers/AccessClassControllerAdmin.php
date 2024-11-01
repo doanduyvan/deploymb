@@ -7,7 +7,8 @@ use Views\ViewLayout;
 class AccessclassControllerAdmin
 {
     private $classAccModel;
-
+    private $pathcss = 'public/css/Admin/';
+    private $pathjs = 'public/js/Admin/';
     function __construct()
     {
         $this->classAccModel = new \Models\AccessclassModel();
@@ -17,9 +18,9 @@ class AccessclassControllerAdmin
     {
         $class = new ViewLayout();
         $class->setTitle('Lớp truy cập');
-        $class->setActivePage(2.3);
-        $class->addCSS('public/css/Admin/classAdmin.css');
-        $class->addJS('public/js/Admin/accessClassAdmin.js');
+        $class->setActivePage(2,2.3);
+        $class->addCSS($this->pathcss . 'classAdmin.css');
+        $class->addJS($this->pathjs . 'accessClassAdmin.js');
         $class->render();
     }
     public function getAccessStatuss() 

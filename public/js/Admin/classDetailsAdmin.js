@@ -160,9 +160,10 @@ function itemtr(item) {
 }
 
 async function removeClass(detail) {
+
   return new Promise(async (resolve) => {
     const url = "admin/classdetails/deletedetailClass";
-    const datareq = { idStudent: detail.idStudent };
+    const datareq = { idStudent: detail.idStudent, idClass : detail.idClasses };
     try {
       const datares = await mbFetch(url, datareq);
       if (datares.error) {

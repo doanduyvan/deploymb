@@ -250,7 +250,7 @@ btnsub.onclick = function () {
 async function removeClass(accounts_classes) {
   return new Promise(async (resolve) => {
     const url = "admin/accessclass/deleteAccessStatus";
-    const datareq = { idStudent: accounts_classes.idStudent };
+    const datareq = { idStudent: accounts_classes.idStudent, idClass : accounts_classes.idClasses };
     try {
       const datares = await mbFetch(url, datareq);
       if (datares.error) {

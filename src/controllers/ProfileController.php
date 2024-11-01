@@ -14,7 +14,7 @@ class ProfileController
     function index()
     {
         $profile = new ViewLayout();
-        $profile->setTitle('Danh sách khóa học');
+        $profile->setTitle('Profile - Anh Ngữ MB');
         $profile->setActivePage(4);
         $profile->addCSS('public/css/Admin/profileAdmin.css');
         $profile->addJS('public/js/Admin/ProfileAdmin.js');
@@ -27,13 +27,21 @@ class ProfileController
         echo json_encode($profile);
         
     }
+
     public function updateAccount()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $datareq = json_decode(file_get_contents('php://input'), true);
-            // var_dump($datareq);
 
             $account = $this->profileModel->updateAccount($datareq);
+            echo json_encode($account);
+        }
+    }
+
+    public function changepassword(){
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $datareq = json_decode(file_get_contents('php://input'), true);
+            $account = $this->profileModel->changepassword($datareq);
             echo json_encode($account);
         }
     }

@@ -612,6 +612,10 @@ video {
   z-index: 1;
 }
 
+.z-\[2\] {
+  z-index: 2;
+}
+
 .m-0 {
   margin: 0px;
 }
@@ -979,9 +983,10 @@ body {
 }
 
 .header_notif_contents>ul>li>a{
+  text-align: center;
   display: block;
   border-bottom: var(--border-color);
-  padding: 10px;
+  padding: 15px;
   position: relative;
 }
 

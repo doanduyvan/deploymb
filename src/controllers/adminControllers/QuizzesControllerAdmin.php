@@ -4,7 +4,8 @@ class QuizzesControllerAdmin{
 
     private $quizView;
     private $quizModel;
-
+    private $pathcss = 'public/css/Admin/';
+    private $pathjs = 'public/js/Admin/';
     function __construct()
     {
         $this->quizView = new \Views\ViewLayout();
@@ -12,23 +13,26 @@ class QuizzesControllerAdmin{
     }
 
     function index(){
-        $this->quizView->setTitle('Quizzes Admin');
+        $this->quizView->setTitle('List Quizzes');
         $this->quizView->setActivePage(9);
-        $this->quizView->templatehtml = file_get_contents('public/temphtml/tempadmin/listquizadmin.html');
+        $this->quizView->addCSS( $this->pathcss . 'listquizadmin.css');
+        $this->quizView->addJS( $this->pathjs . 'listquizadmin.js');
         $this->quizView->render();
     }
 
     function add(){
-        $this->quizView->setTitle('Quizzes Amin');
+        $this->quizView->setTitle('Add Quizzes');
         $this->quizView->setActivePage(9,9.1);
-        $this->quizView->templatehtml = file_get_contents('public/temphtml/tempadmin/addquizadmin.html');
+        $this->quizView->addCSS( $this->pathcss . 'addquizadmin.css');
+        $this->quizView->addJS( $this->pathjs . 'addquizadmin.js');
         $this->quizView->render();
     }
 
     function edit(){
-        $this->quizView->setTitle('Quizzes Admin');
+        $this->quizView->setTitle('Update Quizzes');
         $this->quizView->setActivePage(9);
-        $this->quizView->templatehtml = file_get_contents('public/temphtml/tempadmin/editquizadmin.html');
+        $this->quizView->addCSS( $this->pathcss . 'editquizadmin.css');
+        $this->quizView->addJS( $this->pathjs . 'editquizadmin.js');
         $this->quizView->render();
     }
 

@@ -74,7 +74,8 @@ class ClassDetailModel
     public function deletedetailClass($dataRow)
     {
         $classDetailId = $dataRow['idStudent'];
-        $sql = "DELETE FROM $this->table WHERE idAccounts = $classDetailId";
+        $idClass = $dataRow['idClass'];
+        $sql = "DELETE FROM $this->table WHERE idAccounts = $classDetailId AND idClasses = $idClass";
         try {
             $this->conn->begin_transaction();
             $this->conn->query($sql);

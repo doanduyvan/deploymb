@@ -69,7 +69,8 @@ class LessonModel
     {
         $lessonId = $dataRow['id'];
         $lessonName = $dataRow['lessonName'];
-        $sql = "UPDATE $this->table SET lessonName = '$lessonName'  WHERE id = $lessonId";
+        $courseId = $dataRow['courseId'];
+        $sql = "UPDATE $this->table SET lessonName = '$lessonName', idCourses = '$courseId'  WHERE id = $lessonId";
         try {
             $this->conn->begin_transaction();
             $this->conn->query($sql);

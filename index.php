@@ -19,7 +19,6 @@ define("NOW", $currentDateTime);
 // $web_root .= '/' . $stringPath;
 // define("WEB_ROOT", $web_root);
 
-
 include_once __DIR__ . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
@@ -32,13 +31,6 @@ define("WEB_ROOT", $_ENV['HTTP_ROOT']);
 
 new Cores\Router();
 
-// $test = new \Models\ClassDetailModel();
-
-// $data = $test->getClassDetails(1);
-
-// echo "<pre>";
-// print_r($data);
-// echo "</pre>";
 
 
 

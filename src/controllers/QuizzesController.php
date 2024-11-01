@@ -9,11 +9,15 @@ class QuizzesController
     private $classModel = null;
     private $lessonModel = null;
     private $quizModel = null;
+    private $resultModel = null;
+    private $pathcss = 'public/css/Users/';
+    private $pathjs = 'public/js/Users/';
     function __construct()
     {
         $this->classModel = new \Models\ClassModel();
         $this->lessonModel = new \Models\LessonModel();
         $this->quizModel = new \Models\QuizzesCMSModel();
+        $this->resultModel = new \Models\ResultCMSModel();
     }
 
     function index()
@@ -21,11 +25,8 @@ class QuizzesController
         $quiz = new ViewLayout();
         $quiz->setTitle('Quizzes - Anh Ngữ MB');
         $quiz->setActivePage(5);
-        $quiz->templatehtml = file_get_contents('public/temphtml/tempuser/filterquiz.html');
-
-        // $quiz->templatehtml = file_get_contents('public/temphtml/tempUser/quiz.html');
-        // $quiz->addCSS('public/css/Users/Quiz.css');
-        // $quiz->addJS('public/js/Users/Quiz.js');
+        $quiz->addCSS($this->pathcss . 'filterquiz.css');
+        $quiz->addJS($this->pathjs . 'filterquiz.js');
         $quiz->render();
     }
 
@@ -33,7 +34,8 @@ class QuizzesController
         $quiz = new ViewLayout();
         $quiz->setTitle('Quizzes - Anh Ngữ MB');
         $quiz->setActivePage(5);
-        $quiz->templatehtml = file_get_contents('public/temphtml/tempuser/quiz.html');
+        $quiz->addCSS($this->pathcss . 'quiz.css');
+        $quiz->addJS($this->pathjs . 'quiz.js');
         $quiz->render();
     }
 
@@ -75,6 +77,15 @@ class QuizzesController
         $idUser = \Cores\Authentication::getId();
         $quiz = $this->quizModel->getQuestionByIdQuiz($idUser,$idClass, $idLesson, $idQuiz);
         echo json_encode($quiz);
+    }
+
+    function submitQuiz(){
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $idUser = \Cores\Authentication::getId();
+            $data = json_decode(file_get_contents('php://input'), true);
+            $result = $this->resultModel->submitQuiz($idUser, $data);
+            echo json_encode($result);
+        }
     }
 
 }

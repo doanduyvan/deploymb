@@ -3,7 +3,8 @@ namespace AdminControllers;
 use Views\ViewLayout;
 class CoursesControllerAdmin {
     private $courseModel;
-
+    private $pathcss = 'public/css/Admin/';
+    private $pathjs = 'public/js/Admin/';
     function __construct()
     {
         $this->courseModel = new \Models\CourseModel();
@@ -13,9 +14,8 @@ class CoursesControllerAdmin {
         $course = new ViewLayout();
         $course->setTitle('Danh sách khóa học');
         $course->setActivePage(6);
-        $course->templatehtml = file_get_contents('public/temphtml/tempadmin/courseAdmin.html');
-        $course->addCSS('public/css/Admin/courseAdmin.css');
-        $course->addJS('public/js/Admin/courseAdmin.js');
+        $course->addCSS( $this->pathcss . 'courseAdmin.css');
+        $course->addJS( $this->pathjs . 'courseadmin.js');
         $course->render();
     }
 

@@ -355,6 +355,7 @@ const templateroot = `
 
 </div>`;
 divRoot.innerHTML = templateroot;
+
 async function getCountClass() {
   const url = "admin/dashboard/getCountClass/";
   let datares = [];
@@ -383,7 +384,6 @@ async function renderCountClass() {
   const countStatus0 = count.find(item => Number(item.statuss) === 0)?.total || 0;
   const countStatus1 = count.find(item => Number(item.statuss) === 1)?.total || 0;
   const userName = data.fullName;
-
   console.log(data, countStatus0, countStatus1);
 
   document.getElementById("userNameDashboard").textContent = userName;
@@ -391,4 +391,7 @@ async function renderCountClass() {
   document.getElementById("countStatus1").textContent = countStatus1;
   document.getElementById("countStatus0").textContent = countStatus0;
 }
-renderCountClass();
+// renderCountClass();
+
+const userNameGlobal = document.getElementById("userNameGlobal");
+document.getElementById("userNameDashboard").textContent = userNameGlobal.textContent;

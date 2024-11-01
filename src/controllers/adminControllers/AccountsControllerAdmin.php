@@ -4,6 +4,8 @@ class AccountsControllerAdmin
 {
     private $classModel;
     private $accountModel;
+    private $pathcss = 'public/css/Admin/';
+    private $pathjs = 'public/js/Admin/';
     function __construct()
     {
         $this->classModel = new \Models\ClassModel();
@@ -15,7 +17,8 @@ class AccountsControllerAdmin
         $accounts = new \Views\ViewLayout();
         $accounts->setTitle('Manage Accounts');
         $accounts->setActivePage(8);
-        $accounts->templatehtml = file_get_contents("public/temphtml/tempadmin/accountadmin.html");
+        $accounts->addCSS($this->pathcss . 'accountadmin.css');
+        $accounts->addJS($this->pathjs . 'accountadmin.js');
         $accounts->render();
     }
     // Các phương thức dành cho ajax

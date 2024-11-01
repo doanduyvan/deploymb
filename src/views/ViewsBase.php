@@ -42,6 +42,7 @@ class ViewsBase
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
             <title><?= $this->title ?></title>
+            <link rel="icon" href="public/img/cropped-LogoMrBien_512-300x300.png">
             <?= $this->renderCSS() ?>
             <?= $this->renderModuleJS() ?>
         </head>
