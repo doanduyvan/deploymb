@@ -224,7 +224,7 @@ function componentBoxQuiz(row) {
     <p>Class: <span>${row.className}</span></p>
     <p>Unit: <span>${row.lessonName}</span></p>
     <p>Quiz: <a href="quizzes/startquiz?class=${row.idClass}&unit=${row.idLesson}&quiz=${row.idQuiz}">${row.quizName}</a></p>
-    <p>Score: <span class="${row.score === null ? 'null' : ''}">${row.score === null ? 'null' : row.score + '/10'}</span></p>
+    <p>Score: <span class="${row.score === null ? 'null' : ''}">${row.score === null ? 'Not Attempted' : row.score + '/10'}</span></p>
     <div class="srore_v2" style="--mb-percent: ${scorePercent}%" data-percent="${scorePercent}">
     <div class="progress_v2"></div>
     </div>

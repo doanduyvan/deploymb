@@ -60,7 +60,8 @@ class QuizzesCMSModel{
         inner join courses as co on co.id = le.idCourses
         inner join classes as cl on co.id = cl.idCourses
         inner join accounts_classes as ac on ac.idClasses = cl.id
-        left join resultsCMS as re on re.idClasses = cl.id and re.idQuizzesCMS = qu.id
+        inner join accounts as acc on acc.id = ac.idAccounts
+        left join resultsCMS as re on re.idClasses = cl.id and re.idQuizzesCMS = qu.id and re.idAccounts = acc.id
         where ac.idAccounts = $idUser and cl.id = $idClass and qu.idLessons = $idLesson";
         $stmt = $this->conn->query($sql);
         $result = $stmt->fetch_all(MYSQLI_ASSOC);

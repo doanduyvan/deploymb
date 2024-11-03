@@ -187,7 +187,7 @@ function removeTokensFromUrl() {
 
 function linkGoogle(){
     const clientId = '865532873608-aik1oar7v5gimbu4m84dcl2aj8me92ih.apps.googleusercontent.com';
-    const client_Uri = window.location.origin + window.location.pathname;
+    const client_Uri = document.querySelector('base').href;
     const scope = 'openid%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile';
     const nonce = Math.random().toString(36).substring(2); // Tạo nonce ngẫu nhiên
     return  `https://accounts.google.com/o/oauth2/v2/auth?scope=${scope}&response_type=id_token%20token&redirect_uri=${client_Uri}&client_id=${clientId}&nonce=${nonce}`;
