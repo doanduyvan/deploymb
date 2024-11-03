@@ -1079,7 +1079,8 @@ function updateUrl(){
     const idCourse = quizEditPayload.idCourse;
     const idLesson = quizEditPayload.idLesson;
     const idQuiz = quizEditPayload.idQuiz;
-    const url = `http://localhost/anhngumb/anhngumb_v1/admin/quizzes/edit?course=${idCourse}&lesson=${idLesson}&quiz=${idQuiz}`;
+    const baseUrl = document.querySelector('base').href;
+    const url = baseUrl + `admin/quizzes/edit?course=${idCourse}&lesson=${idLesson}&quiz=${idQuiz}`;
     window.history.replaceState(null, null, url);
     return url;
 }
