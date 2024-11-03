@@ -42,6 +42,11 @@ class ViewsBase
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
             <title><?= $this->title ?></title>
+            <meta name="description" content="Join fun and engaging English quizzes on elearning.anhngumb.com, where you can enhance your language skills with diverse and interesting questions. Suitable for learners at all levels, from beginner to advanced.">
+            <meta property="og:type" content="website">
+            <meta property="og:url" content="https://elearning.anhngumb.com/">
+            <meta property="og:title" content="English Quiz - Improve Your Language Skills | elearning.anhngumb.com">
+            <meta property="og:image" content="public/img/meta_anhngumb.jpg">
             <link rel="icon" href="public/img/cropped-LogoMrBien_512-300x300.png">
             <?= $this->renderCSS() ?>
             <?= $this->renderModuleJS() ?>
