@@ -47,6 +47,8 @@ class ViewsBase
             <meta property="og:url" content="https://elearning.anhngumb.com/">
             <meta property="og:title" content="English Quiz - Improve Your Language Skills | elearning.anhngumb.com">
             <meta property="og:image" content="public/img/meta_anhngumb.jpg">
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
             <link rel="icon" href="public/img/cropped-LogoMrBien_512-300x300.png">
             <?= $this->renderCSS() ?>
             <?= $this->renderModuleJS() ?>
