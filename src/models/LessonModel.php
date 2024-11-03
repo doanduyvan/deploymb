@@ -15,12 +15,13 @@ class LessonModel
     public function getLessons($itemsPerPage, $currentPage, $idCourse = null)
     {
         $offset = ($currentPage - 1) * $itemsPerPage;
-        $sql = "select SQL_CALC_FOUND_ROWS co.courseName, le.* from $this->table as le
-        inner join courses as co on co.id = le.idCourses";
+        $sql = "select SQL_CALC_FOUND_ROWS co.courseName, co.id as idCourse, le.*, count(qui.id) as totalQuiz from $this->table as le
+        inner join courses as co on co.id = le.idCourses
+        left join quizzesCMS as qui on qui.idLessons = le.id";
         if($idCourse !== null){
             $sql .= " WHERE le.idCourses = $idCourse";
         }
-        $sql .= " ORDER BY le.id DESC LIMIT $itemsPerPage OFFSET $offset";
+        $sql .= " group by le.id ORDER BY le.id DESC LIMIT $itemsPerPage OFFSET $offset";
         $stmt = $this->conn->query($sql);
         $totalRow = $this->conn->query("SELECT FOUND_ROWS() as total")->fetch_assoc()['total'];
         $totalPages = ceil($totalRow / $itemsPerPage);

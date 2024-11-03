@@ -49,6 +49,7 @@ const templateroot = `
                 <tr>
                     <th>Course Name</th>
                     <th>Lesson Name</th>
+                    <th>Total Quiz</th>
                     <th>Created At</th>
                     <th>Actions</th>
                 </tr>
@@ -196,7 +197,8 @@ function itemtr(item) {
   const tr = document.createElement("tr");
   tr.innerHTML = `
                 <td>${item.courseName}</td>
-                <td>${item.lessonName}</td>
+                <td><a class="mbLink" href="admin/quizzes?course=${item.idCourse}&lesson=${item.id}">${item.lessonName}</a></td>
+                <td>${item.totalQuiz}</td>
                 <td>${item.createdAt}</td>
                 <td class="td-btn">
                     <button class="btn btn-primary btn-edit-lesson">
