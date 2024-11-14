@@ -29,12 +29,7 @@ const listClassTemplate = `
               </table>
               <div class="list-class-pagination-container">
                   <div class="list-class-pagination-container-select">
-                      <select name="" id="">
-                          <option value="5">5</option>
-                          <option value="10">10</option>
-                          <option value="15">15</option>
-                          <option value="20">20</option>
-                      </select>
+            
                   </div>
                   <div class="list-class-pagination"></div>
               </div>
@@ -63,7 +58,7 @@ divRoot.innerHTML = listClassTemplate;
 const classObject = {
   currentPage: 1,
   totalPage: null,
-  itemPerPage: 5,
+  itemPerPage: 10,
 };
 const handlerProxyCourse = {
   set(target, property, value) {
@@ -88,12 +83,10 @@ async function renderClass() {
   if (currentClass.classId !== null) {
     url += currentClass.classId;
   }
-  console.log(url);
   
   let datares = [];
   try {
     datares = await mbFetch(url, currentClass);
-    console.log(datares);
   } catch (err) {
     console.log(err);
     return;
@@ -135,6 +128,8 @@ async function renderClass() {
 // Lấy id từ url
 function itemtr(item) {
   const tr = document.createElement("tr");
+  const nameClass = 'idtr_' + item.idStudent + '_' + item.idClasses;
+  tr.classList.add(nameClass);
   tr.innerHTML = `
     <td><input type="checkbox" class="check-account" data-id="${item.idStudent}" data-idclass="${item.idClasses}"></td>
                     <td>${item.fullName}</td>  
@@ -158,9 +153,7 @@ function itemtr(item) {
       idUser: item.idStudent,
       idClass: item.idClasses,
     };
-    console.log(itemid);
     dataRow.push(itemid);
-    console.log(dataRow);
     const check = updateStatus(dataRow);
     if (check) {
       tr.remove();
@@ -237,14 +230,26 @@ checkaccountall.addEventListener("change", (e) => {
 });
 
 const btnsub = document.querySelector("#btnsub");
-btnsub.onclick = function () {
-  selectedIds.forEach((item) => {
-    console.log(item.idUser);
-  const check = updateStatus(item.idStudent, item.idClasses);
+btnsub.onclick = async function () {
+  if (selectedIds.length === 0) {
+    mbNotification("Error", "Please select at least one item", 4, 2);
+    return;
+  }
+  let checkRemove = await mbConfirm('Are you sure you want to delete the selected items?');
+  if (!checkRemove) {
+    return;
+  }
+
+  selectedIds.forEach( async (item) => {
+  const check = await updateStatus(item.idStudent, item.idClasses);
   if (check) {
-    emptyElement(document.getElementById("tbody-class"));
+    const trRemove = document.querySelector(`.idtr_${item.idUser}_${item.idClass}`);
+    if (trRemove) {
+      trRemove.remove();
+    }
   }
   });
+  selectedIds = [];
 };
 
 async function removeClass(accounts_classes) {
@@ -267,15 +272,6 @@ async function removeClass(accounts_classes) {
   });
 }
 
-const selectItemPerPage = document.querySelector(
-  ".list-class-pagination-container-select select"
-);
-selectItemPerPage.addEventListener("change", function () {
-  proxyCourse.itemPerPage = parseInt(this.value);
-});
-
-
-
 function updateStatus(oneRow = null) {
   return new Promise(async (resolve) => {
     const url = "admin/accessclass/subaccessStatus";
@@ -283,6 +279,7 @@ function updateStatus(oneRow = null) {
       const datares = await mbFetch(url, oneRow ?? selectedIds);
       if (datares.error) {
         console.log(datares.error);
+        mbNotification("Error", datares.error, 2, 2);
         resolve(false);
       } else {
         resolve(true);

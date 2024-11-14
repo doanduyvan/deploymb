@@ -143,8 +143,8 @@ class AccountModel
         $statuss = 1;
         $sql = "INSERT INTO $this->table (fullName, email, pass, roles, statuss, avatar) VALUES (?, ?, ?, ?, ?, ?)";
         try {
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             $this->conn->begin_transaction();
-            // $this->conn->query($sql);
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param('sssiis', $fullName, $email, $pass, $roles, $statuss, $avatar);
             $stmt->execute();

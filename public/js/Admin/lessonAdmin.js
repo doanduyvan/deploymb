@@ -153,6 +153,7 @@ async function renderLesson() {
   let datares = [];
   try {
     datares = await mbFetch(url);
+    console.log(datares);
   } catch (err) {
     console.log(err);
     return;

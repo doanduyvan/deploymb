@@ -68,6 +68,13 @@ class ViewLayout extends ViewsBase
                 'submenu' => null
             ],
             [
+                'id' => 4,
+                'name' => 'IPA',
+                'svg' => file_get_contents("public/svgs/ipa.svg"),
+                'link' => 'ipa',
+                'submenu' => null
+            ],
+            [
                 'id' => 2,
                 'name' => 'Classes',
                 'svg' => file_get_contents("public/svgs/class.svg"),
