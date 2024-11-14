@@ -84,6 +84,7 @@ class CourseModel{
         $courseId = $dataRow['id'];
         $sql = "DELETE FROM $this->table WHERE id = $courseId";
         try {
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             $this->conn->begin_transaction();
             $this->conn->query($sql);
             $this->conn->commit();
