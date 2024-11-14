@@ -91,6 +91,11 @@ class CourseModel{
             return true;
         } catch (\Exception $e) {
             $this->conn->rollback();
+            if($e->getCode() == 1451){
+                return [
+                    'error' => 'This course is being used by some lessons. Please delete those lessons first.'
+                ];
+            }
             return [
                 'error' => $e->getMessage()
             ];

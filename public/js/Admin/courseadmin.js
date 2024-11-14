@@ -230,6 +230,7 @@ async function removeCourse(course) {
             const datares = await mbFetch(url, datareq);
             if (datares.error) {
                 console.log(datares.error);
+                mbNotification('Error', datares.error, 2, 2);
                 resolve(false);
             } else {
                 resolve(true);
