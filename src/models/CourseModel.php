@@ -84,18 +84,12 @@ class CourseModel{
         $courseId = $dataRow['id'];
         $sql = "DELETE FROM $this->table WHERE id = $courseId";
         try {
-            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             $this->conn->begin_transaction();
             $this->conn->query($sql);
             $this->conn->commit();
             return true;
         } catch (\Exception $e) {
             $this->conn->rollback();
-            if($e->getCode() == 1451){
-                return [
-                    'error' => 'This course is being used by some lessons. Please delete those lessons first.'
-                ];
-            }
             return [
                 'error' => $e->getMessage()
             ];

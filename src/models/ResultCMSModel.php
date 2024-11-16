@@ -33,7 +33,7 @@ class ResultCMSModel
             $scoreUnit = $quizModel->getPercentScoreLesson($idUser, $idClass, $idLesson);
             $this->conn->commit();
             return ['success' => 'success', 'scoreUnit' => $scoreUnit];
-        } catch (\Exception $e) {
+        } catch (\mysqli_sql_exception $e) {
             $this->conn->rollback();
             return ['error' => $e->getMessage()];
         }

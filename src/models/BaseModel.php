@@ -18,6 +18,7 @@ class BaseModel{
         $this->databaseName = $_ENV['DB_NAME'];
         try{
             $this->conn = new mysqli($this->host, $this->userName, $this->password, $this->databaseName);
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         }catch(Exception $e){
             echo "<h2 style='color:red'> Connection failed: " . $e->getMessage() . "</h2>";
             die();
