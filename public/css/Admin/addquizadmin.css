@@ -333,3 +333,11 @@
     padding: 10px;
     outline: none;
 }
+
+.huongdanmb{
+    background-color: rgb(245, 245, 245);
+    display: inline;
+    width: fit-content;
+    border-radius: 4px;
+    padding: 2px 5px;
+}

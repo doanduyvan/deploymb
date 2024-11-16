@@ -483,6 +483,7 @@ function compoentMediaAudioDrive() {
     const div = document.createElement('div');
     div.classList.add('dv-media-audio-drive');
     div.innerHTML = `
+                <a href="https://docs.google.com/document/d/1bwcO5BRMi4yIYxxchLxG5jtEtxWXMmBQ/edit?usp=drive_link&ouid=103986830156427311078&rtpof=true&sd=true" class="huongdanmb" target="_blank">Totorial</a>
                 <div class="form-group">
                     <label for="">Title media</label>
                     <input type="text" name="titleaudiodrive" class="form-control" placeholder="Enter title text">
@@ -535,6 +536,7 @@ function compoentMediaVideoYtb() {
     const div = document.createElement('div');
     div.classList.add('dv-media-video-ytb');
     div.innerHTML = `
+                <a href="https://docs.google.com/document/d/1TKp2lBRqdLk7yLNFqYOoeixxRmZ1dYO8/edit?usp=drive_link&ouid=103986830156427311078&rtpof=true&sd=true" class="huongdanmb" target="_blank">Totorial</a>
                 <div class="form-group">
                     <label for="">Title media</label>
                     <input type="text" name="title"  class="form-control" placeholder="Enter title">
