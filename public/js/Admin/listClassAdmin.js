@@ -50,7 +50,7 @@ const listClassTemplate = `
                 <div class="list-class-pagination-container-select">
                     <select name="" id="">
                         <option value="5">5</option>
-                        <option value="10">10</option>
+                        <option selected value="10">10</option>
                         <option value="15">15</option>
                         <option value="20">20</option>
                     </select>
@@ -72,7 +72,7 @@ let coursesGlobal = [];
 const classObject = {
   currentPage: 1,
   totalPage: null,
-  itemPerPage: 5,
+  itemPerPage: 10,
 };
 
 const statusResquest = {
@@ -88,11 +88,7 @@ const handlerProxyCourse = {
     // Nếu người dùng thay đổi trang
     updateStatusRequest();
     if (property === "currentPage") {
-      
-      console.log(statusResquest);
-      console.log(classObject);
       getClass();
-
     } else if (property === "itemPerPage") {
       getClass();
     }
@@ -128,7 +124,6 @@ async function getClass(){
   let datares = [];
   try {
     datares = await mbFetch(url,statusResquest);
-    console.log(datares);
   } catch (err) {
     console.log(err);
     return;
@@ -286,15 +281,10 @@ function itemtr(item) {
     toggleSwitch.checked = Number(item.statuss) === 1;
     toggleSwitch.onchange = async function () {
       const statuss = this.checked ? 1 : 0;
-      console.log(
-        `Đang thay đổi trạng thái của lớp ${item.id} thành: ${statuss}`
-      );
       const url = "admin/classes/updateStatus";
       const datareq = { id: item.id, statuss };
-      console.log(datareq);
       try {
         const datares = await mbFetch(url, datareq);
-        console.log(datares);
         if (datares.error) {
           console.log(datares.error);
           mbNotification("Error", datares.error, 2, 2);
@@ -314,7 +304,6 @@ function itemtr(item) {
   btnedit.onclick = async function () {
     const data = await showFormEditClass(item);
     if (data) {
-      console.log(data);
       const oneCourse = Courses.find((course) => course.id === data.idCourses);
       data.courseName = oneCourse.courseName;
       const newtr = itemtr(data);

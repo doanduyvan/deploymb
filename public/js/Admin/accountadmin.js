@@ -42,7 +42,7 @@ divRoot.innerHTML = `
     <h4 class="dv-title-filter">Search</h4>
 
     <div class="dv-box dv-box-2">
-        <input type="text" placeholder="Search By Email" id="input-search-email">
+        <input type="text" placeholder="Search By Name or Email" id="input-search-email">
     </div>
 
     <h4 class="dv-title-filter">List Account</h4>

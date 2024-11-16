@@ -76,13 +76,18 @@
 }
 
 .chart-container .chart-title {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 400;
     color: #333;
     margin-bottom: 10px;
+    color: black;
 }
 
-.chart-container .chart-title span{
+.chart-container .chart-title span:first-child {
+    font-weight: bold;
+}
+
+.chart-container .chart-title span:last-child {
     font-weight: normal;
     color: #868686;
 }
@@ -143,6 +148,10 @@
 
 .chart-container .bar-label {
     margin-top: 5px;
+}
+
+.chart-container .bar-label span:first-child {
+    font-weight: bold;
 }
 
 .chart-container .separator {

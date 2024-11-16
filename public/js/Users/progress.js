@@ -22,6 +22,10 @@ if (!classId) {
 
 // get progress
 
+// http://localhost/anhngumb/anhngumb_v1/quizzes?class=16&lesson=10
+// http://localhost/anhngumb/anhngumb_v1/quizzes/startquiz?class=16&unit=10&quiz=159
+
+
 (async () => {
     const url = "classes/getprogressbyclass/" + classId;
     try {
@@ -60,7 +64,7 @@ function renderProgress(data) {
         boxItem.classList.add('box2-item');
         boxItem.innerHTML = `
                <div class="chart-container">
-            <h4 class="chart-title">${lesson.lessonName} <span>(${lesson.percentLesson}%)</span></h4>
+            <a href="quizzes?class=${classId}&lesson=${lesson.idLesson}" class="chart-title"><span>Lesson: </span> <span>${lesson.lessonName}</span> <span>(${lesson.percentLesson}%)</span></a>
             <div class="chart"></div>
         </div>
         `;
@@ -70,7 +74,7 @@ function renderProgress(data) {
             const percent = quiz.percentQuiz;
             div.innerHTML = `
                     <div class="bar${percent <= 10 ? ' red' : ''}" style="--width: ${percent}%">. <div>${percent}%</div> </div>
-                    <div class="bar-label">${quiz.quizName}</div>
+                    <a href="quizzes/startquiz?class=${classId}&unit=${lesson.idLesson}&quiz=${quiz.idQuiz}" class="bar-label"> <span>Quiz: </span> <span>${quiz.quizName}</span></a>
                     <div class="separator"></div>
             `;
             chart.appendChild(div);

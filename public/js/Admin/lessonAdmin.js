@@ -60,7 +60,7 @@ const templateroot = `
             <div class="list-lesson-pagination-container-select">
                 <select name="" id="">
                     <option value="5">5</option>
-                    <option value="10">10</option>
+                    <option selected value="10">10</option>
                     <option value="15">15</option>
                     <option value="20">20</option>
                 </select>
@@ -90,7 +90,7 @@ let coursesGlobal = [];
 const lessonObject = {
   currentPage: 1,
   totalPage: null,
-  itemPerPage: 5,
+  itemPerPage: 10,
   idCourse: ''
 };
 const handlerProxyCourse = {

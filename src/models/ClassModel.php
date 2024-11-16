@@ -245,6 +245,7 @@ class ClassModel
 
             if (!isset($lessons[$idLesson])) {
                 $lessons[$idLesson] = [
+                    "idLesson" => $idLesson,
                     "lessonName" => $row["lessonName"],
                     "percentLesson" => 0,
                     "quizzes" => []
@@ -259,6 +260,7 @@ class ClassModel
             $percentQuiz = ($score / 10) * 100;
             $percentQuiz = floor($percentQuiz);
             $lessons[$idLesson]["quizzes"][] = [
+                "idQuiz" => $row["idQuiz"],
                 "quizName" => $row["quizName"],
                 "percentQuiz" => $percentQuiz
             ];

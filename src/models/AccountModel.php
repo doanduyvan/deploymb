@@ -266,13 +266,33 @@ class AccountModel
             ];
         }
     }
-    function getAccountsByEmail($dataRow){
+    // function getAccountsByEmail($dataRow){
+    //     $email = $dataRow['email'];
+    //     $sql = "select acc.id, acc.fullName, acc.email, acc.roles, acc.statuss, acc.createdAt,  acc.avatar, GROUP_CONCAT(CASE WHEN cl.statuss = 1 THEN cl.className END SEPARATOR ', ') AS className from accounts as acc
+    //     left join accounts_classes as accl on acc.id = accl.idAccounts
+    //     left join classes cl on cl.id = accl.idClasses
+    //     where email like '%$email%' or fullName like '%$email%'
+    //     group by acc.id order by id desc";
+    //     $stmt = $this->conn->query($sql);
+    //     $accounts = $stmt->fetch_all(MYSQLI_ASSOC);
+    //     return $accounts;
+    // }
+
+    function getAccountsByEmail($dataRow) {
         $email = $dataRow['email'];
-        $sql = "select acc.id, acc.fullName, acc.email, acc.roles, acc.statuss, acc.createdAt,  acc.avatar, GROUP_CONCAT(CASE WHEN cl.statuss = 1 THEN cl.className END SEPARATOR ', ') AS className from accounts as acc
-        left join accounts_classes as accl on acc.id = accl.idAccounts
-        left join classes cl on cl.id = accl.idClasses
-        where email like '%$email%'
-        group by acc.id order by id desc";
+        $sql = "
+        SELECT 
+            acc.id, acc.fullName, acc.email, acc.roles, acc.statuss, acc.createdAt, acc.avatar, 
+            GROUP_CONCAT(CASE WHEN cl.statuss = 1 THEN cl.className END SEPARATOR ', ') AS className,
+            (LENGTH(acc.email) - LENGTH(REPLACE(acc.email, '$email', ''))) / LENGTH('$email') AS email_match_score,
+            (LENGTH(acc.fullName) - LENGTH(REPLACE(acc.fullName, '$email', ''))) / LENGTH('$email') AS fullName_match_score
+        FROM accounts AS acc
+        LEFT JOIN accounts_classes AS accl ON acc.id = accl.idAccounts
+        LEFT JOIN classes cl ON cl.id = accl.idClasses
+        WHERE acc.email LIKE '%$email%' OR acc.fullName LIKE '%$email%'
+        GROUP BY acc.id
+        ORDER BY email_match_score DESC, fullName_match_score DESC, acc.id DESC limit 10";
+        
         $stmt = $this->conn->query($sql);
         $accounts = $stmt->fetch_all(MYSQLI_ASSOC);
         return $accounts;

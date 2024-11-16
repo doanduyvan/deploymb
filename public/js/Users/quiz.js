@@ -18,7 +18,6 @@ divRoot.innerHTML = `
         </form>
     </div>
 </div>
-
 `;
 
 // variable global
@@ -398,6 +397,7 @@ function quizWriteComponent(Question, indexQuestion, answer_original) {
     let oldValueInput = '';
     if(oldAnswer){
         answer_original.idAnswer = oldAnswer.idAnswersCMS;
+        answer_original.answer = oldAnswer.userAnswer;
         answer_original.isCorrect = oldAnswer.isCorrect == 1;
         divBox.classList.add(stringIsCorrect[oldAnswer.isCorrect]);
         oldValueInput = oldAnswer.userAnswer;
