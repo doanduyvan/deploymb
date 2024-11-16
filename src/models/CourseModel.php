@@ -90,6 +90,13 @@ class CourseModel{
             return true;
         } catch (\Exception $e) {
             $this->conn->rollback();
+
+            if($e->getCode() == 1451){
+                return [
+                    'error' => 'This course is being used by other data'
+                ];
+            }
+
             return [
                 'error' => $e->getMessage()
             ];

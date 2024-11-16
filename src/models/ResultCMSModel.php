@@ -33,7 +33,7 @@ class ResultCMSModel
             $scoreUnit = $quizModel->getPercentScoreLesson($idUser, $idClass, $idLesson);
             $this->conn->commit();
             return ['success' => 'success', 'scoreUnit' => $scoreUnit];
-        } catch (\mysqli_sql_exception $e) {
+        } catch (\Exception $e) {
             $this->conn->rollback();
             return ['error' => $e->getMessage()];
         }
@@ -162,6 +162,10 @@ class ResultCMSModel
             $arrColumnIsCorrect[] = "when id = $idDetail then $isCorrect";
         }
 
+        if(count($arrNewDetail) > 0){
+            $this->inserResultDetail($idResult, $arrNewDetail);
+        }
+
         if(!$checkQuery){
             return true;
         }
@@ -175,11 +179,6 @@ class ResultCMSModel
         if (!$check) {
             throw new \Exception($this->conn->error);
         }
-
-        if(count($arrNewDetail) > 0){
-            return $this->inserResultDetail($idResult, $arrNewDetail);
-        }
-
         return true;
 
     }
