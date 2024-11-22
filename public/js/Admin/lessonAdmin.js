@@ -114,32 +114,32 @@ proxyCourse.currentPage = 1;
 
 // lấy danh sách khóa học
 let Courses = [];
-( async ()=>{
-    const url = "admin/courses/getallcourses";
-    try {
-        Courses = await mbFetch(url);
-        const selectCourses = document.getElementById("selectCourses");
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "All Courses";
-        selectCourses.appendChild(option);
-        Courses.forEach((item) => {
-            const option = document.createElement("option");
-            option.value = item.id;
-            option.textContent = item.courseName;
-            selectCourses.appendChild(option);
-        });
-        selectCourses.addEventListener("change", function (e) {
-          const courseId = parseInt(this.value);
-          if(isNaN(courseId)){
-            proxyCourse.idCourse = '';
-          }else{
-          proxyCourse.idCourse = courseId;
-          }
-        });
-    } catch (err) {
-        console.log(err);
-    }
+(async () => {
+  const url = "admin/courses/getallcourses";
+  try {
+    Courses = await mbFetch(url);
+    const selectCourses = document.getElementById("selectCourses");
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "All Courses";
+    selectCourses.appendChild(option);
+    Courses.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.id;
+      option.textContent = item.courseName;
+      selectCourses.appendChild(option);
+    });
+    selectCourses.addEventListener("change", function (e) {
+      const courseId = parseInt(this.value);
+      if (isNaN(courseId)) {
+        proxyCourse.idCourse = '';
+      } else {
+        proxyCourse.idCourse = courseId;
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
 })();
 
 async function renderLesson() {
@@ -153,7 +153,6 @@ async function renderLesson() {
   let datares = [];
   try {
     datares = await mbFetch(url);
-    console.log(datares);
   } catch (err) {
     console.log(err);
     return;
@@ -220,6 +219,8 @@ function itemtr(item) {
   btnedit.onclick = async function () {
     const data = await showFormEditLesson(item);
     if (data) {
+      const oldtotalquiz = item.totalQuiz;
+      data.totalQuiz = oldtotalquiz;
       const newtr = itemtr(data);
       tr.replaceWith(newtr);
     }
@@ -268,20 +269,19 @@ function showFormEditLesson(data) {
         resolve(null);
       }
     };
-   const EselectCourses = boxcontent.querySelector("#courseId");
-   Courses.forEach((course) => {
-     const option = document.createElement("option");
-     option.value = course.id;
-     option.textContent = course.courseName;
-     EselectCourses.appendChild(option);
-     if(course.id == data.idCourses){
-       option.selected = true;
-     }
-   });
+    const EselectCourses = boxcontent.querySelector("#courseId");
+    Courses.forEach((course) => {
+      const option = document.createElement("option");
+      option.value = course.id;
+      option.textContent = course.courseName;
+      EselectCourses.appendChild(option);
+      if (course.id == data.idCourses) {
+        option.selected = true;
+      }
+    });
     formEdit.onsubmit = async function (e) {
       e.preventDefault();
       const formData = mbFormData(formEdit);
-      console.log(formData);
       if (formData.lessonName === "") {
         mbNotification("Error", "Please enter course name", 3);
         return;
@@ -376,25 +376,22 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    const courseName = document.getElementById("courseId").selectedOptions[0].textContent;
+
     const url = "admin/lessons/addlesson";
     try {
       const data = await mbFetch(url, formData);
-      console.log(data);
-      // const arrCourses = coursesGlobal.find(
-      //   (item) => item.id == data.idCourses
-      // );
-      // data.courseName = arrCourses.lessonName;
-     
       if (data.error) {
         console.log(data.error);
         mbNotification("Error", data.error, 2, 2);
       } else {
         const tbody = document.getElementById("tbody-lesson");
-
         if (!tbody) {
           console.error("Element #tbody-lesson không tồn tại.");
           return;
         }
+        data.totalQuiz = 0;
+        data.courseName = courseName;
         const newtr = itemtr(data);
 
         if (tbody.firstChild) {

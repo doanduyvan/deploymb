@@ -22,7 +22,13 @@ class CourseModel{
         $offset = ($currentPage - 1) * $itemsPerPage;
         $totalCourses = $this->getTotalCourses();
         $totalPages = ceil($totalCourses / $itemsPerPage);
-        $sql = "SELECT * FROM $this->table ORDER BY id DESC LIMIT $itemsPerPage OFFSET $offset";
+        $sql = "SELECT cou.*, COUNT(les.id) AS totalLesson 
+        FROM $this->table as cou
+        LEFT JOIN lessons as les ON les.idCourses = cou.id 
+        GROUP BY cou.id
+        ORDER BY cou.id DESC
+        LIMIT $itemsPerPage OFFSET $offset";
+
         $stmt = $this->conn->query($sql);
         $courses = $stmt->fetch_all(MYSQLI_ASSOC);
         return [

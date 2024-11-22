@@ -27,6 +27,7 @@ const templateroot = `
             <thead>
                 <tr>
                     <th>Course Name</th>
+                    <th>Total Lessons</th>
                     <th>Created At</th>
                     <th>Actions</th>
                 </tr>
@@ -94,6 +95,7 @@ async function renderCourse() {
     let datares = [];
     try {
         datares = await mbFetch(url);
+        console.log(datares);
     } catch (err) {
         console.log(err);
         return;
@@ -136,6 +138,7 @@ function itemtr(item) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
                 <td>${item.courseName}</td>
+                <td>${item.totalLesson}</td>
                 <td>${item.createdAt}</td>
                 <td class="td-btn">
                     <button class="btn btn-primary btn-edit-course">
@@ -156,6 +159,8 @@ function itemtr(item) {
     btnedit.onclick = async function () {
         const data = await showFormEditCourse(item);
         if (data) {
+            const oldtotalLesson = item.totalLesson;
+            data.totalLesson = oldtotalLesson;
             const newtr = itemtr(data);
             tr.replaceWith(newtr);
         }
@@ -269,6 +274,7 @@ addCourseform.addEventListener('submit', async function (e) {
             mbNotification('Error', data.error, 2, 2);
         } else {
             const tbody = document.getElementById('tbody-course');
+            data.totalLesson = 0;
             const tr = itemtr(data);
             if (tbody.firstChild) {
                 tbody.insertBefore(tr, tbody.firstChild);
