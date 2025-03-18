@@ -84,6 +84,7 @@ const Quizzes = {
 };
 
 let questionIdCounter = 0;
+let idatmp = 0;
 
 // lấy khóa học và bài học
 (async () => {
@@ -614,7 +615,7 @@ function componentQuestionChoose() {
 
     const stt = getOdinal();
     const currentId = ++questionIdCounter;
-    let idatmp = 0;
+    
 
     const question = {
         idtmp: currentId,
