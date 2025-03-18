@@ -20,7 +20,7 @@ class ViewLayout extends ViewsBase
         $this->userName = Authentication::getFullName();
         $this->linkImg = Authentication::getAvatar();
         $this->setRoleName();
-        $this->addCSS('public/css/style.css');
+        $this->addCSS('public/css/style1.css');
         if ($this->role == 1 || $this->role == 2) {
             $this->addJS('public/js/Admin/mainAdmin.js');
         } else {
