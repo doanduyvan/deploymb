@@ -471,7 +471,7 @@ function quizWriteComponent(Question, indexQuestion) {
           return;
         }
 
-        const resultBoolean = truValue.toLowerCase() == userValue.toLowerCase();
+        const resultBoolean = normalizeApostrophe(truValue.toLowerCase()) == normalizeApostrophe(userValue.toLowerCase());
         if(answerIndex !== -1) {
             quizResult.answers[answerIndex].answer = saveValue;
             quizResult.answers[answerIndex].isCorrect = resultBoolean;
@@ -517,4 +517,11 @@ function normalizeWhitespace(quillContent) {
     return quillContent
         .replace(/&nbsp;/g, ' ')  // Chuyển `&nbsp;` thành khoảng trắng bình thường
         .trim();                  // Xóa khoảng trắng đầu và cuối
+}
+
+function normalizeApostrophe(text) {
+    text = text.trim();
+    return text
+        .replace(/‘|’/g, "'")  // Chuyển ‘ ’ thành '
+        .replace(/“|”/g, '"'); // Chuyển “ ” thành "
 }
