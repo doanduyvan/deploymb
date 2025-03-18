@@ -19,9 +19,9 @@ class ClassesController
     public function index()
     {
         $this->layout->setTitle('Classes - AnhNguMB');
-        $this->layout->setActivePage(2);
+        $this->layout->setActivePage(2,2);
         $this->layout->addCSS($this->pathcss . 'joinclass.css');
-        $this->layout->addJS($this->pathjs . 'joinclass.js');
+        $this->layout->addJS($this->pathjs . 'joinclass1.js');
         $this->layout->render();
     }
 

@@ -7,6 +7,7 @@ class ViewsBase
     protected $title = "Document";
     protected $arrCSS = [];
     protected $arrJS = [];
+    protected $arrNoModuleJS = [];
 
     protected function renderCSS(){
         foreach($this->arrCSS as $css){
@@ -24,6 +25,14 @@ class ViewsBase
         foreach($this->arrJS as $js){
             ?>
             <script type="module" src="<?= $js ?>"></script>
+            <?php
+        }
+    }
+
+    protected function renderNoModuleJS(){
+        foreach($this->arrNoModuleJS as $js){
+            ?>
+            <script src="<?= $js ?>"></script>
             <?php
         }
     }
@@ -64,6 +73,7 @@ class ViewsBase
         <body>
             <?= $this->renderBody() ?>
             <?= $this->renderJS() ?>
+            <?= $this->renderNoModuleJS() ?>
         </body>
         </html>
 <?php

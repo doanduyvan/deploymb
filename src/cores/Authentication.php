@@ -2,14 +2,13 @@
 namespace Cores;
 use Google\Client;
 use \Models\AccountModel;
+
 class Authentication{
     private $id;
     private $name;
     private $role;
     private $priveKey = "123fdjfjdfdjfdjf";
     private $IdClient = "865532873608-aik1oar7v5gimbu4m84dcl2aj8me92ih.apps.googleusercontent.com";
-    
-
 
     static function setAccountSession($arrAccount){
         $_SESSION['acc'] = $arrAccount;
@@ -60,7 +59,6 @@ class Authentication{
     }
 
     static function logout(){
-        unset($_SESSION['acc']);
         session_destroy();
         setcookie('user_token_mb', '', time() - 3600, '/');
     }

@@ -18,7 +18,7 @@ class ClassesControllerAdmin
     {
         $class = new ViewLayout();
         $class->setTitle('Danh sách khóa học');
-        $class->setActivePage(2);
+        $class->setActivePage(2,2);
         $class->addCSS( $this->pathcss . 'classAdmin.css');
         $class->addJS( $this->pathjs . 'listClassAdmin.js');
         

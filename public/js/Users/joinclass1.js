@@ -12,7 +12,6 @@ divRoot.innerHTML = `
                     <option value="" disabled selected>Choose Course</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary" id="btn-filter">Show Result</button>
         </form>
     </div>
         <div class="dv-box show-class" id="listClass">
@@ -57,6 +56,7 @@ let idCourse = '';
             }else{
                 idCourse = id;
             }
+            getDetailClass();
         });
 
     } catch ($err) {
@@ -68,14 +68,14 @@ let idCourse = '';
 })();
 
 
-(() => {
-    const btnFilter = document.getElementById('btn-filter');
-    btnFilter.addEventListener('click', (e) => {
-        e.preventDefault();
-        getDetailClass();
-    });
+// (() => {
+//     const btnFilter = document.getElementById('btn-filter');
+//     btnFilter.addEventListener('click', (e) => {
+//         e.preventDefault();
+//         getDetailClass();
+//     });
 
-})();
+// })();
 
 getDetailClass();
 

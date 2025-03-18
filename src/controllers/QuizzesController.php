@@ -26,7 +26,7 @@ class QuizzesController
         $quiz->setTitle('Quizzes - Anh Ngữ MB');
         $quiz->setActivePage(5);
         $quiz->addCSS($this->pathcss . 'filterquiz.css');
-        $quiz->addJS($this->pathjs . 'filterquiz.js');
+        $quiz->addJS($this->pathjs . 'filterquiz1.js');
         $quiz->render();
     }
 
@@ -34,8 +34,8 @@ class QuizzesController
         $quiz = new ViewLayout();
         $quiz->setTitle('Quizzes - Anh Ngữ MB');
         $quiz->setActivePage(5);
-        $quiz->addCSS($this->pathcss . 'quiz.css');
-        $quiz->addJS($this->pathjs . 'quiz.js');
+        $quiz->addCSS($this->pathcss . 'quiz1.css');
+        $quiz->addJS($this->pathjs . 'quiz1.js');
         $quiz->render();
     }
 

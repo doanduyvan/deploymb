@@ -282,3 +282,11 @@ function mbFormData(form) {
 }
 
 export {mbFormData};
+
+function getDateFromTimestamp(timestamp) {
+    // return timestamp.split(" ")[0];
+    const [year, month, day] = timestamp.split(" ")[0].split("-");
+    return `${day}/${month}/${year.slice(2)}`; // Chuyển thành DD/MM/YY
+}
+
+export {getDateFromTimestamp};

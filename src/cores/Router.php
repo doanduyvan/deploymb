@@ -11,9 +11,11 @@ class Router
     private $action = 'index';
     private $params = [];
     private $isLogin = false;
+
     function __construct()
     {
         $this->auth = new Authentication();
+
         $arrUrl = $this->UrlProcess();
         $this->handlUrl($arrUrl);
         if($this->controler == 'logout'){
@@ -36,6 +38,7 @@ class Router
             $this->handlUser();
         }
     }
+
 
     function handlUrl($arrUrl){
         if (isset($arrUrl[0]) && $arrUrl[0] == 'admin') {
@@ -113,7 +116,9 @@ class Router
     {
         if (isset($_GET['url'])) {
             $url = strtolower($_GET['url']);
-            return explode("/", trim(trim($url, " "), "/"));
+
+            $arr = explode("/", trim(trim($url, " "), "/"));
+            return $arr;
         }
     }
 }

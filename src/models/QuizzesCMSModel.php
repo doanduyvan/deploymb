@@ -10,6 +10,7 @@ class QuizzesCMSModel{
     }
 
     public function addQuiz($dataRow){
+        $idUser = \Cores\Authentication::getId();
         $idLesson = $dataRow['idLesson'];
         $quizName = $dataRow['quizName'];
         $media = $dataRow['media'];
@@ -17,7 +18,7 @@ class QuizzesCMSModel{
 
         $quizName = $this->conn->real_escape_string($quizName);
 
-        $sql = "INSERT INTO $this->table (title, idLessons) VALUES ('$quizName', $idLesson)";
+        $sql = "INSERT INTO $this->table (title, idLessons, idUser) VALUES ('$quizName', $idLesson, $idUser)";
         try {
             $this->conn->begin_transaction();
             $this->conn->query($sql);
@@ -124,6 +125,80 @@ class QuizzesCMSModel{
         }
     }
 
+    public function getPreviewQuiz($idUser,$idCourse,$idLesson, $idQuiz)
+    {
+
+        $role = \Cores\Authentication::getRole();
+        $isAdmin = $role === 2 ? true : false;
+
+        $isEdit = false;
+
+        if($isAdmin){
+            $isEdit = true;
+        }else{
+            $idUserInQuiz = $this->getIdUserInQuiz($idQuiz);
+            if($idUserInQuiz === null || $idUserInQuiz != $idUser){
+               $isEdit = false;
+            }else{
+                $isEdit = true;
+            }
+        }
+
+        $idCourse = $this->conn->real_escape_string($idCourse);
+        $idLesson = $this->conn->real_escape_string($idLesson);
+        $idQuiz = $this->conn->real_escape_string($idQuiz);
+
+        try{
+            $sql = "select
+            les.id as idLesson,
+            les.lessonName,
+            cou.courseName,
+            qui.id as idQuiz,
+            qui.title as quizName,	
+            qui.idUser
+            from quizzesCMS as qui
+            inner join lessons as les on les.id = qui.idLessons
+            inner join courses as cou on cou.id = les.idCourses
+            where qui.id = $idQuiz and les.id = $idLesson and cou.id = $idCourse";
+
+
+            $stmt = $this->conn->query($sql);
+            $quizzes = $stmt->fetch_assoc();
+            if($quizzes === null){
+                return [
+                    'error' => 'Quiz not found'
+                ];
+            }
+            $sql = "select m.title, m.type, m.content from mediaCMS as m where idQuizzesCMS = $idQuiz";
+            $stmt = $this->conn->query($sql);
+            $media = $stmt->fetch_assoc();
+            $quizzes['mediaCMS'] = $media;
+
+            $questionModel = new QuestionCMSModel();
+            $questions = $questionModel->getQuestionByIdQuiz($idQuiz);
+            $quizzes['questionsCMS'] = $questions;
+            $quizzes['isEdit'] = $isEdit;
+
+            if($quizzes['idUser'] !== null){
+                $accountModel = new AccountModel();
+                $user = $accountModel->getNameAndEmailById($quizzes['idUser']);
+                $quizzes['user'] = $user;
+            }else{
+                $quizzes['user'] = [
+                    'fullName' => null,
+                    'email' => null
+                ];
+            }
+  
+            return $quizzes;
+
+        }catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
     function getPercentScoreLesson($idUser,$idClass,$idLesson){
 
         // lấy tổng số câu hỏi của bài học
@@ -148,7 +223,9 @@ class QuizzesCMSModel{
     }
 
     function getQuizName($dataRow){
-
+        $idUser = \Cores\Authentication::getId();
+        $role = \Cores\Authentication::getRole();
+        $isAdmin = $role === 2 ? true : false;
         $idCourse = $dataRow['idCourse'];
         $idLesson = $dataRow['idLesson'];
         $currentPage = $dataRow['currentPage'];
@@ -176,9 +253,27 @@ class QuizzesCMSModel{
         $totalRow = $this->conn->query("SELECT FOUND_ROWS() as total")->fetch_assoc()['total'];
         $totalPages = ceil($totalRow / $itemsPerPage);
         $result = $stmt->fetch_all(MYSQLI_ASSOC);
+
+        $accountModel = new AccountModel();
+
+        foreach($result as $key => $value){
+           $idUserInQuiz = $value['idUser'];
+           if($idUserInQuiz !== null){
+               $user = $accountModel->getNameAndEmailById($idUserInQuiz);
+               $result[$key]['user'] = $user;
+           }else{
+               $result[$key]['user'] = [
+                'fullName' => null,
+                'email' => null
+               ];
+           }
+        }
+
         return [
             'quizzes' => $result,
-            'totalPages' => $totalPages
+            'totalPages' => $totalPages,
+            'yourId' => $idUser,
+            'isAdmin' => $isAdmin
         ];
     }
 
@@ -231,10 +326,22 @@ class QuizzesCMSModel{
         $idCourse = $dataRow['idCourse'];
         $idLesson = $dataRow['idLesson'];
         $idQuiz = $dataRow['idQuiz'];
+
+        $idUser = \Cores\Authentication::getId();
+        $role = \Cores\Authentication::getRole();
+        if($role !== 2){
+            $idUserInQuiz = $this->getIdUserInQuiz($idQuiz);
+            if($idUserInQuiz === null || $idUserInQuiz != $idUser){
+                return [
+                    'error' => 'You do not have permission to update this quiz'
+                ];
+            }
+        }
+
         $quizName = $this->conn->real_escape_string($dataRow['quizName']);
         $media = $dataRow['mediaCMS'];
         $questions = $dataRow['questionsCMS'];
-        $arridQuestionDelete = $dataRow['arridQuestionDelete'];
+        $arridQuestionDelete = $dataRow['arridQuestionDelete'];   
 
         $mediaModel = new MediaCMSModel();
         $questionModel = new QuestionCMSModel();
@@ -258,6 +365,8 @@ class QuizzesCMSModel{
                 'idQuiz' => $idQuiz
             ];
             $dataRes = $this->getQuizEdit($dataGetQuiz);
+            // dùng tạm thời để cập nhật idUser cho các bài quiz bị null
+            $this->updateIdUserTemp($idQuiz);
 
             return ['message' => 'Update quiz success', 'data' => $dataRes];
             
@@ -272,8 +381,19 @@ class QuizzesCMSModel{
     }
 
     function deleteQuiz($dataRow){
-
+        $idUser = \Cores\Authentication::getId();
+        $role = \Cores\Authentication::getRole();
         $idQuiz = $dataRow['idQuiz'];
+
+        if($role !== 2){
+           $idUserInQuiz = $this->getIdUserInQuiz($idQuiz);
+           if($idUserInQuiz === null || $idUserInQuiz != $idUser){
+               return [
+                   'error' => 'You do not have permission to delete this quiz'
+               ];
+           }
+        }
+
         try{
             $this->conn->begin_transaction();
             $mediaModel = new MediaCMSModel();
@@ -291,6 +411,25 @@ class QuizzesCMSModel{
                 'error' => $e->getMessage()
             ];
         }
+    }
+
+    function getIdUserInQuiz($idQuiz){
+        $sql = "select idUser from $this->table where id = $idQuiz";
+        $stmt = $this->conn->query($sql);
+        $result = $stmt->fetch_assoc();
+        return $result['idUser'];
+    }
+
+    // hàm này chỉ dùng tạm thời để cập nhật các idUser trong bảng quizzesCMS bị null
+    // khi idUser null, thì sẽ ghi nhận người cập nhật đầu tiên vào bài quiz đó, sau đó sẽ không thay đổi
+    function updateIdUserTemp($idQuiz){
+        $idUser = \Cores\Authentication::getId();
+        $idUserInQuiz = $this->getIdUserInQuiz($idQuiz);
+        if($idUserInQuiz !== null){
+            return;
+        }
+        $sql = "update $this->table set idUser = $idUser where id = $idQuiz";
+        $this->conn->query($sql);
     }
 
 }

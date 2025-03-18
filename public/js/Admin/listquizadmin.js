@@ -1,4 +1,4 @@
-import { mbNotification, mbConfirm, mbLoading, mbFetch, mbPagination, mbFormData } from "../allmodule.js";
+import { mbNotification, mbConfirm, mbLoading, mbFetch, mbPagination, mbFormData, getDateFromTimestamp } from "../allmodule.js";
 const divRoot = document.getElementById('root');
 divRoot.innerHTML = `
 <div class="dv-content">
@@ -28,6 +28,7 @@ divRoot.innerHTML = `
                     <th>Quiz Name</th>
                     <th>Total</th>
                     <th>Time</th>
+                    <th>Author</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -71,6 +72,8 @@ const objectSend = {
     itemsPerPage: 20
 }
 let totalPages = 1;
+let yourId = null;
+let isAdmin = false;
 
 // kiểm tra url có id không
 const urlParams = new URLSearchParams(window.location.search);
@@ -198,6 +201,8 @@ async function getQuizName() {
         const data = await mbFetch('admin/quizzes/getQuizName', objectSend);
         console.log(data);
         totalPages = data.totalPages;
+        yourId = data.yourId;
+        isAdmin = data.isAdmin;
         renderQuizzes(data.quizzes);
     } catch (e) {
         console.log(e);
@@ -237,9 +242,12 @@ function componentTr(row) {
     tr.innerHTML = `
         <td>${row.courseName}</td>
         <td>${row.lessonName}</td>
-        <td>${row.title}</td>
+        <td>
+            <a href="admin/quizzes/preview?course=${row.idCourse}&lesson=${row.idLessons}&quiz=${row.id}" style="font-weight: bold;">${row.title}</a>
+        </td>
         <td>${row.totalQuestion}</td>
-        <td>${row.createdAt}</td>
+        <td>${getDateFromTimestamp(row.createdAt)}</td>
+        <td title='${row.user.email}'>${row.user.fullName}</td>
         <td class="td-btns">
             <button class="btn btn-primary edit">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="23" height="23">
@@ -256,6 +264,12 @@ function componentTr(row) {
 
     const btnEdit = tr.querySelector('.edit');
     btnEdit.onclick = function () {
+
+        if( !isAdmin && (!yourId || yourId != row.idUser)){
+            mbNotification('Error', 'You do not have permission to edit this quiz', 2, 3);
+            return;
+        }
+
         const idCourse = row.idCourse;
         const idLesson = row.idLessons;
         const idQuiz = row.id;
@@ -265,6 +279,12 @@ function componentTr(row) {
 
     const btnDel = tr.querySelector('.del');
     btnDel.onclick = async function () {
+
+        if( !isAdmin && (!yourId || yourId != row.idUser)){
+            mbNotification('Error', 'You do not have permission to delete this quiz', 2, 3);
+            return;
+        }
+
         const confirm = await mbConfirm(`Do you want to delete this quiz <b style="color: red">${row.title}</b> ?`);
         if (!confirm) {
             return;

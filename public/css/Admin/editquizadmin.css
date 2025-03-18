@@ -222,6 +222,10 @@
     padding: 10px;
 }
 
+.dv-addquiz .dv-list-question .dv-question-choose>.answers>.group-answer>.box-editor{
+    flex: 1;
+}
+
 .dv-addquiz .dv-list-question .dv-question-choose>.answers>.group-answer:has(input[type="radio"]:checked) {
     --border-color: green;
     --border-px: 2px;
@@ -354,4 +358,19 @@
 
 .cl-red {
     color: red;
+}
+
+.dv-add-answer{
+    margin-top: 10px;
+    display: flex;
+    justify-content: right;
+}
+
+.dv-add-answer>button{
+    padding: 5px 10px;
+    border: none;
+    outline: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
 }

@@ -215,11 +215,16 @@
     --border-px: 1px;
     display: flex;
     align-items: center;
+    /* justify-content: space-between; */
     gap: 10px;
     margin-top: 10px;
     border: var(--border-px) solid var(--border-color);
     border-radius: 5px;
     padding: 10px;
+}
+
+.dv-addquiz .dv-list-question .dv-question-choose>.answers>.group-answer .box-editor{
+    flex: 1;
 }
 
 .dv-addquiz .dv-list-question .dv-question-choose>.answers>.group-answer:has(input[type="radio"]:checked) {
@@ -340,4 +345,19 @@
     width: fit-content;
     border-radius: 4px;
     padding: 2px 5px;
+}
+
+.dv-add-answer{
+    margin-top: 10px;
+    display: flex;
+    justify-content: right;
+}
+
+.dv-add-answer>button{
+    padding: 5px 10px;
+    border: none;
+    outline: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
 }

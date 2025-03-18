@@ -297,4 +297,20 @@ class AccountModel
         $accounts = $stmt->fetch_all(MYSQLI_ASSOC);
         return $accounts;
     }
+
+    function getNameAndEmailById($id){
+        $sql = "SELECT fullName, email FROM $this->table WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0) {
+            return null;
+        }
+        $row = $result->fetch_assoc();
+        return [
+            'fullName' => $row['fullName'],
+            'email' => $row['email']
+        ];
+    }
 }

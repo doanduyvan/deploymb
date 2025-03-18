@@ -27,4 +27,16 @@ class AnswersCMSModel{
             ];
         }
     }
+
+    function deleteAnswer($arrIdAnswer)
+    {
+        if (count($arrIdAnswer) == 0) {
+            return;
+        }
+        $sql = "DELETE FROM $this->table WHERE id IN (" . implode(',', $arrIdAnswer) . ")";
+        $check = $this->conn->query($sql);
+        if (!$check) {
+            throw new \Exception("Failed to delete answer: " . $this->conn->error);
+        }
+    }
 }

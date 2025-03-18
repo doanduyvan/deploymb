@@ -1104,6 +1104,7 @@ body {
   /* background-color: rgba(156, 43, 43,0.2); */
 }
 
+.menu .list-ul>li>.list-ul-primary-menu>label:first-child,
 .menu .list-ul>li>.list-ul-primary-menu>a{
   padding: 10px;
   color: black;
@@ -1144,8 +1145,8 @@ body {
   transition: all 0.2s ease-in-out;
 }
 
-.menu .list-ul>li>.list-ul-primary-menu>label:hover svg{
-  transform: rotate(90deg);
+.menu .list-ul>li>.list-ul-primary-menu>label:hover:last-child svg{
+  /* transform: rotate(90deg); */
 }
 
 .menu .list-ul>li:not(.hassubmenu) .list-ul-primary-menu>label>svg{
@@ -1649,4 +1650,16 @@ body {
   background-color: #f1f1f1;
   border-bottom-color: var(--mb-primary-color);
 
+}
+
+.ql-size-small {
+  font-size: .75em !important;
+}
+
+.ql-size-large {
+  font-size: 1.5em !important;
+}
+
+.ql-size-huge {
+  font-size: 2.5em !important;
 }

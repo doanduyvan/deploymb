@@ -27,7 +27,7 @@ divRoot.innerHTML = `
             </div>
         </div>
     </div>
-        <button class="btn btn-primary" id="btn-filter-quiz">Show Result</button>
+        
     </div>
     <div class="dv-content-box box2">
         <div class="totalQuizzes">
@@ -39,6 +39,8 @@ divRoot.innerHTML = `
     </div>
 </div>
 `;
+
+/* <button class="btn btn-primary" id="btn-filter-quiz">Show Result</button> */
 
 // variable global
 
@@ -156,6 +158,9 @@ async function getUnitByClass(idClass) {
         customSelect('idCustomSelectUnit', function (value) {
             dataPage.idLesson = value;
             flagFilter = true;
+            // console.log('change unit');
+            updateURL();
+            getQuizByUnit(dataPage.idClass, dataPage.idLesson);
         }, dataPage.idLesson);
 
     } catch (e) {
@@ -166,25 +171,25 @@ async function getUnitByClass(idClass) {
 }
 
 // btn filter
-(() => {
+// (() => {
 
-    const btnFilterQuiz = document.getElementById('btn-filter-quiz');
-    btnFilterQuiz.addEventListener('click', function () {
+//     const btnFilterQuiz = document.getElementById('btn-filter-quiz');
+//     btnFilterQuiz.addEventListener('click', function () {
 
-        if (dataPage.idClass === null || dataPage.idLesson === null) {
-            mbNotification('Warrning', 'Please select Class and Unit',3,1.5);
-            return;
-        }
-        if(!flagFilter){
-            return;
-        }
-        flagFilter = false;
+//         if (dataPage.idClass === null || dataPage.idLesson === null) {
+//             mbNotification('Warrning', 'Please select Class and Unit',3,1.5);
+//             return;
+//         }
+//         if(!flagFilter){
+//             return;
+//         }
+//         flagFilter = false;
 
-        updateURL();
-        getQuizByUnit(dataPage.idClass, dataPage.idLesson);
-    });
+//         updateURL();
+//         getQuizByUnit(dataPage.idClass, dataPage.idLesson);
+//     });
 
-})();
+// })();
 
 async function getQuizByUnit(idClass, idUnit) {
     const loading = document.querySelector('.dv-content-box.box2');

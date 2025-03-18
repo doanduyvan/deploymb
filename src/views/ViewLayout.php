@@ -1,7 +1,9 @@
 <?php
 
 namespace Views;
+
 use Cores\Authentication;
+
 class ViewLayout extends ViewsBase
 {
     private $userName = '';
@@ -54,6 +56,11 @@ class ViewLayout extends ViewsBase
         $this->arrJS[] = $js;
     }
 
+    function addNoModuleJS($js)
+    {
+        $this->arrNoModuleJS[] = $js;
+    }
+
 
     // Duoiws đây là phần mặc định của layout, không cần gọi ra
 
@@ -81,6 +88,11 @@ class ViewLayout extends ViewsBase
                 'link' => 'classes',
                 'submenu' => [
                     [
+                        'id' => 2,
+                        'name' => 'Find Classes',
+                        'link' => 'classes'
+                    ],
+                    [
                         'id' => 2.1,
                         'name' => 'My Classes',
                         'link' => 'classes/myclass'
@@ -98,7 +110,7 @@ class ViewLayout extends ViewsBase
                 'id' => 3,
                 'name' => 'My Profile',
                 'svg' => file_get_contents("public/svgs/person.svg"),
-                'link' => 'profile',  
+                'link' => 'profile',
                 'submenu' => null
             ],
             [
@@ -142,6 +154,11 @@ class ViewLayout extends ViewsBase
                 'link' => 'admin/quizzes',
                 'submenu' => [
                     [
+                        'id' => 9,
+                        'name' => 'Quizzes',
+                        'link' => 'admin/quizzes'
+                    ],
+                    [
                         'id' => 9.1,
                         'name' => 'Add Quiz',
                         'link' => 'admin/quizzes/add'
@@ -155,11 +172,15 @@ class ViewLayout extends ViewsBase
                 'link' => 'admin/classes',
                 'submenu' => [
                     [
+                        'id' => 2,
+                        'name' => 'Classes',
+                        'link' => 'admin/classes'
+                    ],
+                    [
                         'id' => 2.1,
                         'name' => 'Add Class',
                         'link' => 'admin/classes/addClassAdmin'
-                    ]
-                    ,
+                    ],
                     [
                         'id' => 2.3,
                         'name' => 'Access Class',
@@ -167,6 +188,13 @@ class ViewLayout extends ViewsBase
                     ]
                 ]
             ],
+            // [
+            //     'id' => 10,
+            //     'name' => 'Students',
+            //     'svg' => file_get_contents("public/svgs/students.svg"),
+            //     'link' => 'admin/students',
+            //     'submenu' => null
+            // ],
             [
                 'id' => 8,
                 'name' => 'Accounts',
@@ -224,10 +252,19 @@ class ViewLayout extends ViewsBase
                     <input type="checkbox" hidden class="list-ul-input-check-submenu" id="submenu_<?= $key ?>" <?= $this->idParentPage == $menu['id'] && $this->idChildPage != null ? 'checked' : '' ?>>
                 <?php endif; ?>
                 <div class="list-ul-primary-menu">
-                    <a class="<?= $this->idParentPage == $menu['id'] && $this->idChildPage == null ? 'active' : '' ?>" href="<?= $menu['link'] ?>" id="<?= $menu['id'] === 15 ? 'mblogout' : '' ?>">
-                        <span> <?= $menu['svg'] ?> </span>
-                        <span><?= $menu['name'] ?></span>
-                    </a>
+
+                    <?php if ($submenu): ?>
+                            <label for="submenu_<?= $key ?>"  class="<?= $this->idParentPage == $menu['id'] && $this->idChildPage == null ? 'active' : '' ?>">
+                                <span> <?= $menu['svg'] ?> </span>
+                                <span><?= $menu['name'] ?></span>
+                            </label>
+                    <?php else : ?>
+                        <a class="<?= $this->idParentPage == $menu['id'] && $this->idChildPage == null ? 'active' : '' ?>" <?= $submenu ? 'onclick="return false"' : '' ?> href="<?= $menu['link'] ?>" id="<?= $menu['id'] === 15 ? 'mblogout' : '' ?>">
+                            <span> <?= $menu['svg'] ?> </span>
+                            <span><?= $menu['name'] ?></span>
+                        </a>
+                    <?php endif; ?>
+
                     <?php if ($submenu): ?>
                         <label for="submenu_<?= $key ?>" class="label-arrow">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -252,10 +289,11 @@ class ViewLayout extends ViewsBase
         }
     }
 
-    function renderModuleJS(){
+    function renderModuleJS()
+    {
         ?>
         <script type="module" src="public/js/allmodule.js"></script>
-        <?php
+    <?php
     }
 
 
@@ -272,7 +310,7 @@ class ViewLayout extends ViewsBase
 
     function renderBody()
     {
-        ?>
+    ?>
 
         <header class="w-full h-[50px] fixed top-0 left-0 right-0 border-b-[1px] bg-white z-[2]">
             <div class="max-w-[100%] mx-auto h-full px-[10px] lg:px-[25px]">
@@ -300,7 +338,7 @@ class ViewLayout extends ViewsBase
         <div class="mt-[50px] max-w-[100%] mx-auto">
             <div class="flex flex-col md:flex-row min-h-[calc(100dvh-50px)] md:min-h-max">
                 <aside
-                    class="aside header_aside lg:w-[250px] md:w-[200px] p-[10px] md:p-[0px] flex justify-between items-center md:items-stretch border-[1px]">
+                    class="aside header_aside lg:w-[250px] md:w-[200px] p-[10px] md:p-[0px] flex justify-between items-center md:items-stretch">
                     <div class="md:w-full">
                         <div class="flex md:flex-col justify-center items-center gap-[15px] md:gap-0 md:mt-[15px]">
                             <img class="w-[47px] md:w-[128px] aspect-square object-cover overflow-hidden rounded-[50%]" src="<?= $this->linkImg ?>" alt="">
@@ -337,6 +375,6 @@ class ViewLayout extends ViewsBase
         </div>
 
 <?Php
-    
+
     }
 }

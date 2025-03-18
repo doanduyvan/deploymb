@@ -36,7 +36,7 @@ let quizResult = {
     score: 0,
     answers: []
 }
-
+ 
 let quizzes = null;
 let firstResult = false;
 let scoreResult = null;
@@ -133,21 +133,11 @@ function renderQuizzes(data) {
     handlEmptyChildren(listQuestions);
     questions.forEach((question, index) => {
 
-        const answer = {
-            type: 0,
-            idQuestion: question.id,
-            idAnswer: null,
-            isCorrect: false,
-            answer: null
-        };
-
-        quizResult.answers.push(answer);
-
         let questionComponent = null;
         if (question.typeAnswers == 0) {
-            questionComponent = quizChoiceComponent(question, index, answer);
+            questionComponent = quizChoiceComponent(question, index);
         } else if (question.typeAnswers == 1) {
-            questionComponent = quizWriteComponent(question, index, answer);
+            questionComponent = quizWriteComponent(question, index);
         }
         if (questionComponent) {
             listQuestions.appendChild(questionComponent);
@@ -335,7 +325,16 @@ function mediaYoutubeVideo(data) {
     return divBox;
 }
 
-function quizChoiceComponent(questions, indexQuestion, answer_original) {
+function quizChoiceComponent(questions, indexQuestion) {
+
+    const answer_original = {
+        type: 0,
+        idQuestion: questions.id,
+        idAnswer: null,
+        isCorrect: false,
+        answer: null,
+    };
+
     const divBox = document.createElement('div');
     divBox.classList.add('question-box', 'question-choice');
     divBox.setAttribute('data-indexQuestion', indexQuestion);
@@ -350,12 +349,22 @@ function quizChoiceComponent(questions, indexQuestion, answer_original) {
         answer_original.isCorrect = oldAnswer.isCorrect == 1;
         divBox.classList.add(stringIsCorrect[oldAnswer.isCorrect]);
     }
-    answer_original.type = 0;
 
-    divBox.innerHTML = `
-                    <p class="question-title">${indexQuestion + 1}. ${questions.questionName}</p>
-                <div class="answers-choice-group"></div>
-`;
+
+    const existingAnswer = quizResult.answers.find(ans => ans.idQuestion == questions.id);
+    if (!existingAnswer) {
+        quizResult.answers = [...quizResult.answers, { ...answer_original }];
+    }
+
+    const questionName = normalizeWhitespace(questions.questionName);
+
+        divBox.innerHTML = `
+        <div class="question-title"> 
+            <span>${indexQuestion + 1}.&nbsp;</span>
+             <div class='conten-editer'>${questionName}</div>
+        </div>
+        <div class="answers-choice-group"></div>
+        `;
 
     const answers = questions.answersCMS;
     const answersGroup = divBox.querySelector('.answers-choice-group');
@@ -366,28 +375,48 @@ function quizChoiceComponent(questions, indexQuestion, answer_original) {
         }
         const label = document.createElement('label');
         label.classList.add('answers-choice-label');
+
+        const answerName = normalizeWhitespace(answer.answerName);
+
         label.innerHTML = `
         <input type="radio" name="question_${questions.id}" id="question_${questions.id}" value="${answer.id}" ${checked}>
-        <span>${STTABC[index]}. ${answer.answerName}</span>
-    `;
+        <div class="box-answer">
+        <span>${STTABC[index]}.&nbsp;</span>
+        <div class='answer-editer'> ${answerName} </div>
+        </div>
+        `;
 
-        label.querySelector('input').addEventListener('change', function (e) {
+        const input = label.querySelector('input');
+        input.onchange = function (e) {
             const idAnswer = parseInt(e.target.value);
-            answer_original.idAnswer = idAnswer;
-            answer_original.isCorrect = answer.isCorrect;
-        });
+
+            const answerIndex = quizResult.answers.findIndex((ans) => ans.idQuestion == questions.id);
+            if (answerIndex !== -1) {
+                quizResult.answers[answerIndex].idAnswer = idAnswer;
+                quizResult.answers[answerIndex].isCorrect = answer.isCorrect;
+            }
+
+        };
+
         answersGroup.appendChild(label);
     });
 
     return divBox;
 }
 
-function quizWriteComponent(Question, indexQuestion, answer_original) {
+function quizWriteComponent(Question, indexQuestion) {
+
+    const answer_original = {
+        type: 1,
+        idQuestion: Question.id,
+        idAnswer: null,
+        isCorrect: null,
+        answer: null,
+    };
+
     const divBox = document.createElement('div');
     divBox.classList.add('question-box', 'question-write');
     divBox.setAttribute('data-indexQuestion', indexQuestion);
-    answer_original.type = 1;
-    answer_original.isCorrect = null;
     const stringIsCorrect = {
         0: 'isCorrectFalse',
         1: 'isCorrectTrue'
@@ -402,29 +431,76 @@ function quizWriteComponent(Question, indexQuestion, answer_original) {
         divBox.classList.add(stringIsCorrect[oldAnswer.isCorrect]);
         oldValueInput = oldAnswer.userAnswer;
     }
+
+    const existingAnswer = quizResult.answers.find(ans => ans.idQuestion == Question.id);
+    if (!existingAnswer) {
+        quizResult.answers = [...quizResult.answers, { ...answer_original }];
+    }
+
+
+    const questionName = normalizeWhitespace(Question.questionName);
     
     divBox.innerHTML = `
-    <p class="question-title">${indexQuestion + 1}. ${Question.questionName}</p>
+            <div class="question-title"> 
+            <span>${indexQuestion + 1}.&nbsp;</span>
+             <div class='conten-editer'>${questionName}</div>
+            </div>
     `;
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Enter your answer';
     input.value = oldValueInput;
-    input.addEventListener('input', function (e) {
-        answer_original.idAnswer = Question.answersCMS.id;
+
+    input.onchange = function (e) {
+        const idAnswer = Question.answersCMS.id ?? null;
+
+        const answerIndex = quizResult.answers.findIndex((ans) => ans.idQuestion == Question.id);
+        if (answerIndex !== -1) {
+          quizResult.answers[answerIndex].idAnswer = idAnswer;
+        }
+
         const truValue = Question.answersCMS.answerName.trim();
         const saveValue = e.target.value;
         const userValue = saveValue.trim();
-        if (userValue == '') {
-            answer_original.answer = null;
-            answer_original.isCorrect = null;
-            return;
+
+        if (userValue == "") {
+          if (answerIndex !== -1) {
+            quizResult.answers[answerIndex].answer = null;
+            quizResult.answers[answerIndex].isCorrect = null;
+          }
+          return;
         }
+
         const resultBoolean = truValue.toLowerCase() == userValue.toLowerCase();
-        answer_original.answer = saveValue;
-        answer_original.isCorrect = resultBoolean;
-    });
+        if(answerIndex !== -1) {
+            quizResult.answers[answerIndex].answer = saveValue;
+            quizResult.answers[answerIndex].isCorrect = resultBoolean;
+        }
+
+    };
+
+
+    const textAnswer = Question.answersCMS.answerName ?? '';
+
+    const showValue = document.createElement('div');
+    showValue.classList.add('showValue');
+    showValue.innerHTML = `
+    <div class="btn-showValue">
+        <label for="inputshow_${Question.id}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+        </label>
+        <input id='inputshow_${Question.id}' type="checkbox" hidden />
+        <div class='box-show'>
+        <p>${textAnswer}</p>
+        </div>
+    </div>
+    `;
+
     divBox.appendChild(input);
+    divBox.appendChild(showValue);
     return divBox;
 }
 
@@ -434,3 +510,11 @@ function handlEmptyChildren(element) {
     }
 }
 
+
+function normalizeWhitespace(quillContent) {
+    // return quillContent;
+    if (!quillContent) return ""; // Nếu nội dung rỗng, trả về chuỗi rỗng
+    return quillContent
+        .replace(/&nbsp;/g, ' ')  // Chuyển `&nbsp;` thành khoảng trắng bình thường
+        .trim();                  // Xóa khoảng trắng đầu và cuối
+}

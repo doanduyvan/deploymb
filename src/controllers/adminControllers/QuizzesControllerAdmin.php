@@ -6,6 +6,8 @@ class QuizzesControllerAdmin{
     private $quizModel;
     private $pathcss = 'public/css/Admin/';
     private $pathjs = 'public/js/Admin/';
+    private $pathcssall = 'public/css/';
+    private $pathjsall = 'public/js/';
     function __construct()
     {
         $this->quizView = new \Views\ViewLayout();
@@ -14,7 +16,7 @@ class QuizzesControllerAdmin{
 
     function index(){
         $this->quizView->setTitle('List Quizzes');
-        $this->quizView->setActivePage(9);
+        $this->quizView->setActivePage(9,9);
         $this->quizView->addCSS( $this->pathcss . 'listquizadmin.css');
         $this->quizView->addJS( $this->pathjs . 'listquizadmin.js');
         $this->quizView->render();
@@ -24,7 +26,9 @@ class QuizzesControllerAdmin{
         $this->quizView->setTitle('Add Quizzes');
         $this->quizView->setActivePage(9,9.1);
         $this->quizView->addCSS( $this->pathcss . 'addquizadmin.css');
-        $this->quizView->addJS( $this->pathjs . 'addquizadmin.js');
+        $this->quizView->addCSS( $this->pathcssall . 'quill.css');
+        $this->quizView->addNoModuleJS( $this->pathjs . 'addquizadmin.js');
+        $this->quizView->addNoModuleJS( $this->pathjsall . 'quill.js');
         $this->quizView->render();
     }
 
@@ -32,12 +36,29 @@ class QuizzesControllerAdmin{
         $this->quizView->setTitle('Update Quizzes');
         $this->quizView->setActivePage(9);
         $this->quizView->addCSS( $this->pathcss . 'editquizadmin.css');
-        $this->quizView->addJS( $this->pathjs . 'editquizadmin.js');
+        $this->quizView->addCSS( $this->pathcssall . 'quill.css');
+        $this->quizView->addNoModuleJS( $this->pathjs . 'editquizadmin.js');
+        $this->quizView->addNoModuleJS( $this->pathjsall . 'quill.js');
+
+        $this->quizView->render();
+    }
+
+    function preview(){
+        $this->quizView->setTitle('Preview Quizzes');
+        $this->quizView->setActivePage(9);
+        $this->quizView->addCSS( $this->pathcssall . 'Users/quiz1.css');
+        $this->quizView->addJS( $this->pathjs . 'previewquizadmin.js');
         $this->quizView->render();
     }
 
     // các hàm xử lý ajax
 
+    function previewquiz($idCourse,$idLesson,$idquiz){
+        $idUser = \Cores\Authentication::getId();
+        $quiz = new \Models\QuizzesCMSModel();
+        $quiz = $quiz->getPreviewQuiz($idUser,$idCourse,$idLesson,$idquiz);
+        echo json_encode($quiz);
+    }
 
     function getCourses(){
         $courses = new \Models\CourseModel();

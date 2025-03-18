@@ -117,9 +117,14 @@ class QuestionCMSModel
             'isCorrect' => []
         ];
 
+        $arridAnswerDelete = [];
+
         for ($i = 0; $i < count($arrQuestion); $i++) {
             $question = $arrQuestion[$i];
+            $idQuestion = $question['id'];
             $action = $question['action'];
+
+
             if ($action === null) {
                 continue;
             }
@@ -142,10 +147,24 @@ class QuestionCMSModel
                 
                 $answers = $question['answersCMS'];
 
+                if(isset($question['arridAnswerDelete'])){
+                    $arridAnswerDelete = array_merge($arridAnswerDelete, $question['arridAnswerDelete']);
+                }
+
                 if($type == 0){
                     for($j = 0; $j < count($answers); $j++){
                         $answer = $answers[$j];
                         $idAnswer = $answer['id'];
+
+                        if($idAnswer === null){
+                            $answerModel = new AnswersCMSModel();
+                            $check = $answerModel->addAnswer($idQuestion, $answer);
+                            if (isset($check['error'])) {
+                                throw new \Exception($check['error']);
+                            }
+                            continue;
+                        }
+
                         $answerName = $this->conn->real_escape_string($answer['answerName']);
                         $isCorrect = $answer['isCorrect'] ? 1 : 0;
                         $updateAnswer['answerName'][] = "WHEN id = $idAnswer THEN '$answerName'";
@@ -181,6 +200,10 @@ class QuestionCMSModel
                 throw new \Exception("Failed to update answer: " . $this->conn->error);
             }
         }
+
+        // Xóa đáp án
+        $answerModel = new AnswersCMSModel();
+        $answerModel->deleteAnswer($arridAnswerDelete);
     }
 
     function deleteQuestion($arrIdQuestion)

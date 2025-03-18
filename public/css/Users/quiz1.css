@@ -23,6 +23,12 @@
     }
 }
 
+.quiz-title-admin{
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
 .dv-content-quiz-box.quizzes .quiz-title {
     font-size: 22px;
     font-weight: bold;
@@ -85,15 +91,19 @@
 .dv-content-quiz-box.quizzes .quizListQuestions .question-write>p,
 .dv-content-quiz-box.quizzes .quizListQuestions .question-choice>p {
     font-size: var(--mb-text-title);
-    font-weight: 500;
+    /* font-weight: 500; */
     color: #000000;
 }
 
 .dv-content-quiz-box.quizzes .quizListQuestions .question-choice .answers-choice-group {
-    display: flex;
+    /* display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     margin-top: 15px;
+    gap: 10px; */
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 10px;
 }
 
@@ -204,11 +214,7 @@
         flex: 1 1 100%;
     }
 }
-</style>
 
-
-
-<style>
 .dv-content-quiz-box.boxinfo .dv-top a:first-child {
     color: #22bab3;
     font-size: 18px;
@@ -282,4 +288,85 @@
     height: 100%;
     top: 0;
     left: 0;
+}
+
+#formQuizzes > .quizListQuestions .question-title{
+    display: flex;
+}
+
+#formQuizzes > div.quizListQuestions .answers-choice-label .box-answer{
+    display: flex;
+}
+
+
+/* show đáp án */
+
+#formQuizzes > div.quizListQuestions div.showValue{
+    display: none;
+}
+
+#formQuizzes > div.quizListQuestions.showResult div.showValue{
+    display: block;
+    text-align: right;
+    margin: 0;
+}
+
+#formQuizzes > div.quizListQuestions.showResult div.showValue .btn-showValue{
+    display: inline-block;
+    background-color: green;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transform: translateY(10px);
+    position: relative;
+}
+
+#formQuizzes > div.quizListQuestions.showResult div.showValue .btn-showValue label{
+    display: block;
+    padding: 5px;
+    cursor: pointer;
+}
+
+#formQuizzes > div.quizListQuestions.showResult div.showValue .btn-showValue .box-show{
+    position: absolute;
+    top: -14%;
+    right: calc(100% + 10px);
+    background-color: rgb(255, 255, 255);
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    text-align: left;
+    z-index: 1;
+    min-width: 260px;
+}
+
+#formQuizzes > div.quizListQuestions.showResult div.showValue .btn-showValue .box-show p{
+    color: black;
+    font-size: 1rem;
+    width: 100%;
+}
+
+#formQuizzes > div.quizListQuestions.showResult div.showValue .btn-showValue input:checked ~ .box-show{
+    opacity: 1;
+    visibility: visible;
+}
+
+/* for admin */
+
+#root > div > div.dv-content-quiz-box.boxinfo .dv-top-admin-box{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#root > div > div.dv-content-quiz-box.boxinfo .dv-top-admin-box a.btn.ct{
+    padding: 5px;
+}
+
+#root > div > div.dv-content-quiz-box.boxinfo .dv-top-admin-box div:first-child h4 span:first-child{
+    color: #22bab3;
+    font-size: 18px;
+    font-weight: bold;
 }
