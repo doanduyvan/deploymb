@@ -47,7 +47,8 @@ class QuizzesControllerAdmin{
         $this->quizView->setTitle('Preview Quizzes');
         $this->quizView->setActivePage(9);
         $this->quizView->addCSS( $this->pathcssall . 'Users/quiz2.css');
-        $this->quizView->addJS( $this->pathjs . 'previewquizadmin1.js');
+        $this->quizView->addCSS( $this->pathcssall . 'quill.css');
+        $this->quizView->addJS( $this->pathjs . 'previewquizadmin2.js');
         $this->quizView->render();
     }
 

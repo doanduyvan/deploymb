@@ -12,6 +12,7 @@ class QuizzesController
     private $resultModel = null;
     private $pathcss = 'public/css/Users/';
     private $pathjs = 'public/js/Users/';
+    private $pathcssall = 'public/css/';
     function __construct()
     {
         $this->classModel = new \Models\ClassModel();
@@ -35,7 +36,8 @@ class QuizzesController
         $quiz->setTitle('Quizzes - Anh Ngữ MB');
         $quiz->setActivePage(5);
         $quiz->addCSS($this->pathcss . 'quiz2.css');
-        $quiz->addJS($this->pathjs . 'quiz3.js');
+        $quiz->addCSS($this->pathcssall . 'quill.css');
+        $quiz->addJS($this->pathjs . 'quiz4.js');
         $quiz->render();
     }
 

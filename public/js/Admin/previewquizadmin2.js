@@ -308,7 +308,7 @@ function mediaTextComponent(data) {
     divBox.classList.add('media-text');
     divBox.innerHTML = `
     <span>${data.title}</span>
-    <div class="textContents">${data.content}</div>
+    <div class="textContents ql-container ql-snow ql-editor">${data.content}</div>
 `;
     return divBox;
 }
