@@ -473,6 +473,9 @@ btnUpdate.addEventListener('click', async () => {
         }
     }
 
+    // gửi lên server
+    // console.log(quizEditPayload);
+    // return;
 
     const confirm = await mbConfirm('Do you want to update quiz?');
     if (!confirm) return;
@@ -603,16 +606,13 @@ function componentMediaText(data = null) {
         }
     }
 
-    setTimeout(() => {
-        const quill = initializeQuill(`#contentmedia`);
-        quill.on("text-change", function () {
-          let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-          quizEditPayload.mediaCMS.content = value || null;
-            if (quizEditPayload.mediaCMS.action === null) {
-                quizEditPayload.mediaCMS.action = 'update';
-            }
-        });
-      }, 0);
+    const callback = (value) => {
+      quizEditPayload.mediaCMS.content = value || null;
+      if (quizEditPayload.mediaCMS.action === null) {
+        quizEditPayload.mediaCMS.action = "update";
+      }
+    };
+    initQuillDeboun("#contentmedia",'Nhập nội dung bài viết...', callback, 350);
 
     return div;
 }
@@ -780,12 +780,14 @@ function componentQuestionChoose(data = null) {
         typeAnswers: 0,
         action: null,
         answersCMS: [],
-        arridAnswerDelete: []
+        arridAnswerDelete: [],
+        note: null
     };
 
     if (data !== null) {
         question.questionName = data.questionName;
         question.typeAnswers = data.typeAnswers;
+        question.note = data.note;
         // question.answersCMS = data.answersCMS;
     } else {
         question.action = 'create';
@@ -794,6 +796,7 @@ function componentQuestionChoose(data = null) {
     quizEditPayload.questionsCMS.push(question);
 
     const textQuestion = data === null ? '' : data.questionName;
+    const note = data?.note ?? '';
 
     const div = document.createElement('div');
     div.classList.add('dv-question-choose');
@@ -814,19 +817,33 @@ function componentQuestionChoose(data = null) {
         <div class="dv-add-answer">
             <button type="button" >+</button>
         </div>
+        <div class="dv-note">
+            <div id="dvnote_${currentId}">${note}</div>
+        </div>
 `;
     div.innerHTML = html;
 
-    setTimeout(() => {
-        const quill = initializeQuill(`#questionEditor${currentId}`);
-        quill.on("text-change", function () {
-          let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-            question.questionName = value || null;
-            if (question.action === null) {
-                question.action = 'update';
-            }
-        });
-      }, 0);
+    const callBackInputQuestion = (value) => {
+      const indexQuestion = getIndexQuestion(currentId);
+      if (indexQuestion === -1) return;
+      quizEditPayload.questionsCMS[indexQuestion].questionName = value || null;
+      const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+      if (checkAction === null) {
+        quizEditPayload.questionsCMS[indexQuestion].action = "update";
+      }
+    };
+    initQuillDeboun(`#questionEditor${currentId}`, 'Nhập câu hỏi ở đây...', callBackInputQuestion, 350);
+
+    const callBackInputNote = (value) => {
+      const indexQuestion = getIndexQuestion(currentId);
+      if (indexQuestion === -1) return;
+      quizEditPayload.questionsCMS[indexQuestion].note = value || null;
+      const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+      if (checkAction === null) {
+        quizEditPayload.questionsCMS[indexQuestion].action = "update";
+      }
+    };
+    initQuillDeboun(`#dvnote_${currentId}`, 'Nhập ghi chú ở đây...', callBackInputNote, 350);
 
 
     if (data !== null) {
@@ -842,14 +859,16 @@ function componentQuestionChoose(data = null) {
     const btnAddAnswer = div.querySelector('.dv-add-answer button');
     btnAddAnswer.onclick = function (e) {
         div.querySelector('.answers').appendChild(boxAnswer(currentId, idatmp++));
-        if (question.action === null) {
-            question.action = 'update';
+        const indexQuestion = getIndexQuestion(currentId);
+        if(indexQuestion === -1) return;
+        const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+        if (checkAction === null) {
+            quizEditPayload.questionsCMS[indexQuestion].action = 'update';
         }
     }
 
 
     function boxAnswer(currentId,idatmp, oldAnswer = null) {
-        console.log(idatmp)
         const answer = {
             id: null,
             answerName: null,
@@ -882,32 +901,27 @@ function componentQuestionChoose(data = null) {
         `;
         div.innerHTML = html;
 
-        // const input = div.querySelector('input[type=text]');
-        // input.oninput = function (e) {
-        //     let value = e.target.value;
-        //     value = value.trim();
-        //     // get index from idatmp
-        //     let indexold = question.answersCMS.findIndex(ans => ans.idatmp === idatmp);
-        //     question.answersCMS[indexold].answerName = value || null;
-        // }
-
-        setTimeout(() => {
-            const quill = initializeQuill(`#answerEditor${idatmp}`);
-            quill.on("text-change", function () {
-              let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-              let indexold = question.answersCMS.findIndex(ans => ans.idatmp === idatmp);
-              question.answersCMS[indexold].answerName = value || null;
-                if (question.action === null) {
-                    question.action = 'update';
-                }
-            });
-        }, 0);
+        const callBackInputAnswer = (value) => {
+            const indexQuestion = getIndexQuestion(currentId);
+            if(indexQuestion === -1) return;
+            const indexAnswer = getIndexAnswer(currentId,idatmp);
+            if(indexAnswer === -1) return;
+            quizEditPayload.questionsCMS[indexQuestion].answersCMS[indexAnswer].answerName = value || null;
+            const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+            if (checkAction === null) {
+                quizEditPayload.questionsCMS[indexQuestion].action = 'update';
+            }
+        }
+        initQuillDeboun(`#answerEditor${idatmp}`, 'Nhập câu trả lời ở đây...', callBackInputAnswer, 350);
 
         const inputradio = div.querySelector('input[type=radio]');
         inputradio.onchange = function (e) {
-            let indexold = question.answersCMS.findIndex(ans => ans.idatmp === idatmp);
-            question.answersCMS.forEach((ans, i) => {
-                ans.isCorrect = i === indexold;
+            const indexQuestion = getIndexQuestion(currentId);
+            if(indexQuestion === -1) return;
+            const indexAnswer = getIndexAnswer(currentId,idatmp);
+            if(indexAnswer === -1) return;
+            quizEditPayload.questionsCMS[indexQuestion].answersCMS.forEach((ans, i) => {
+                ans.isCorrect = i === indexAnswer;
             });
         }
 
@@ -919,21 +933,29 @@ function componentQuestionChoose(data = null) {
                 mbNotification('Warrning', 'Min 2 answer', 3, 2);
                 return;
             }
-            let indexold = question.answersCMS.findIndex(ans => ans.idatmp === idatmp);
 
-            if(question.answersCMS[indexold].isCorrect){
+            const indexQuestion = getIndexQuestion(currentId);
+            if(indexQuestion === -1) return;
+            const indexAnswer = getIndexAnswer(currentId,idatmp);
+            if(indexAnswer === -1) return;
+            // let indexold = question.answersCMS.findIndex(ans => ans.idatmp === idatmp);
+            const checkIsCorrect = quizEditPayload.questionsCMS[indexQuestion].answersCMS[indexAnswer].isCorrect;
+            if(checkIsCorrect){
                 mbNotification('Warrning', 'Can not delete answer correct', 3, 2);
                 return;
             }
 
-            if(arridCurrentQuestion.includes(currentId) && question.answersCMS[indexold].id !== null){
-                question.arridAnswerDelete.push(question.answersCMS[indexold].id);
-                if(question.action === null){
-                    question.action = 'update';
+            const checkIdAnswer = quizEditPayload.questionsCMS[indexQuestion].answersCMS[indexAnswer].id;
+
+            if(arridCurrentQuestion.includes(currentId) && checkIdAnswer !== null){
+                const idAnswerDelete = quizEditPayload.questionsCMS[indexQuestion].answersCMS[indexAnswer].id;
+                quizEditPayload.questionsCMS[indexQuestion].arridAnswerDelete.push(idAnswerDelete);
+                const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+                if(checkAction === null){
+                    quizEditPayload.questionsCMS[indexQuestion].action = 'update';
                 }
             }
-
-            question.answersCMS.splice(indexold, 1);
+            quizEditPayload.questionsCMS[indexQuestion].answersCMS.splice(indexAnswer, 1);
             div.remove();
         }
 
@@ -950,11 +972,14 @@ function componentQuestionChoose(data = null) {
     const inputradio = div.querySelectorAll('.answers input[type=radio]');
     inputradio.forEach((radio, index) => {
         radio.onchange = function (e) {
-            question.answersCMS.forEach((ans, i) => {
+            const indexQuestion = getIndexQuestion(currentId);
+            if(indexQuestion === -1) return;
+            quizEditPayload.questionsCMS[indexQuestion].answersCMS.forEach((ans, i) => {
                 ans.isCorrect = i === index;
             });
-            if (question.action === null) {
-                question.action = 'update';
+            const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+            if (checkAction === null) {
+                quizEditPayload.questionsCMS[indexQuestion].action = 'update';
             }
         }
     });
@@ -996,13 +1021,15 @@ function componentQuestionTrueFalse(data = null) {
                 answerName: "False",
                 isCorrect: false
             }
-        ]
+        ],
+        note: null
     };
 
     if (data !== null) {
         question.questionName = data.questionName;
         question.typeAnswers = data.typeAnswers;
         question.answersCMS = data.answersCMS;
+        question.note = data.note;
     } else {
         question.action = 'create';
     }
@@ -1010,6 +1037,7 @@ function componentQuestionTrueFalse(data = null) {
     quizEditPayload.questionsCMS.push(question);
 
     const textQuestion = data === null ? '' : data.questionName;
+    const note = data?.note ?? '';
 
     const div = document.createElement('div');
     div.classList.add('dv-question-choose', 'true-false');
@@ -1034,19 +1062,33 @@ function componentQuestionTrueFalse(data = null) {
                 <input type="text" placeholder="Answer 2" value="False" disabled>
             </div>
         </div>
+        <div class="dv-note">
+            <div id="dvnote_${currentId}">${note}</div>
+        </div>
 `;
     div.innerHTML = html;
 
-    setTimeout(() => {
-        const quill = initializeQuill(`#questionEditor${currentId}`);
-        quill.on("text-change", function () {
-            let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-            question.questionName = value || null;
-            if (question.action === null) {
-                question.action = 'update';
-            }
-        });
-    }, 0);
+    const callBackInputQuestion = (value) => {
+        const indexQuestion = getIndexQuestion(currentId);
+        if(indexQuestion === -1) return;
+        quizEditPayload.questionsCMS[indexQuestion].questionName = value || null;
+        const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+        if (checkAction === null) {
+            quizEditPayload.questionsCMS[indexQuestion].action = 'update';
+        }
+    }
+    initQuillDeboun(`#questionEditor${currentId}`, 'Nhập câu hỏi ở đây...', callBackInputQuestion, 350);
+
+    const callBackInputNote = (value) => {
+        const indexQuestion = getIndexQuestion(currentId);
+        if(indexQuestion === -1) return;
+        quizEditPayload.questionsCMS[indexQuestion].note = value || null;
+        const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+        if (checkAction === null) {
+            quizEditPayload.questionsCMS[indexQuestion].action = 'update';
+        }
+    }
+    initQuillDeboun(`#dvnote_${currentId}`, 'Nhập ghi chú ở đây...', callBackInputNote, 350);
 
     if (data !== null) {
         data.answersCMS.forEach((ans, index) => {
@@ -1058,11 +1100,14 @@ function componentQuestionTrueFalse(data = null) {
     const inputradio = div.querySelectorAll('input[type=radio]');
     inputradio.forEach((radio, index) => {
         radio.onchange = function (e) {
-            question.answersCMS.forEach((ans, i) => {
+            const indexQuestion = getIndexQuestion(currentId);
+            if(indexQuestion === -1) return;
+            quizEditPayload.questionsCMS[indexQuestion].answersCMS.forEach((ans, i) => {
                 ans.isCorrect = i === index;
             });
-            if (question.action === null) {
-                question.action = 'update';
+            const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+            if (checkAction === null) {
+                quizEditPayload.questionsCMS[indexQuestion].action = 'update';
             }
         }
     });
@@ -1096,13 +1141,15 @@ function componentQuestionWrite(data = null) {
         {
             answerName: null,
             isCorrect: true
-        }
+        },
+        note: null
     }
 
     if (data !== null) {
         question.questionName = data.questionName;
         question.typeAnswers = data.typeAnswers;
         question.answersCMS = data.answersCMS;
+        question.note = data.note;
     } else {
         question.action = 'create';
     }
@@ -1110,6 +1157,7 @@ function componentQuestionWrite(data = null) {
     quizEditPayload.questionsCMS.push(question);
 
     const textQuestion = data === null ? '' : data.questionName;
+    const note = data?.note ?? '';
 
     const div = document.createElement('div');
     div.classList.add('dv-question-write');
@@ -1125,19 +1173,33 @@ function componentQuestionWrite(data = null) {
                 <div id="questionEditor${currentId}" class="editor">${textQuestion}</div>
                 </div>
                 <input type="text" placeholder="Answer" name="answer">
+                <div class="dv-note">
+                    <div id="dvnote_${currentId}">${note}</div>
+                </div>
     `;
     div.innerHTML = html;
 
-    setTimeout(() => {
-        const quill = initializeQuill(`#questionEditor${currentId}`);
-        quill.on("text-change", function () {
-            let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-            question.questionName = value || null;
-            if (question.action === null) {
-                question.action = 'update';
-            }
-        });
-    }, 0);
+    const callBackInputQuestion = (value) => {
+        const indexQuestion = getIndexQuestion(currentId);
+        if(indexQuestion === -1) return;
+        quizEditPayload.questionsCMS[indexQuestion].questionName = value || null;
+        const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+        if (checkAction === null) {
+            quizEditPayload.questionsCMS[indexQuestion].action = 'update';
+        }
+    }
+    initQuillDeboun(`#questionEditor${currentId}`, 'Nhập câu hỏi ở đây...', callBackInputQuestion, 350);
+
+    const callBackInputNote = (value) => {
+        const indexQuestion = getIndexQuestion(currentId);
+        if(indexQuestion === -1) return;
+        quizEditPayload.questionsCMS[indexQuestion].note = value || null;
+        const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+        if (checkAction === null) {
+            quizEditPayload.questionsCMS[indexQuestion].action = 'update';
+        }
+    }
+    initQuillDeboun(`#dvnote_${currentId}`, 'Nhập ghi chú ở đây...', callBackInputNote, 350);
 
     if (data !== null) {
         const answer = div.querySelector('input[name=answer]');
@@ -1148,9 +1210,12 @@ function componentQuestionWrite(data = null) {
     answer.oninput = function (e) {
         let value = e.target.value;
         value = value.trim();
-        question.answersCMS.answerName = value || null;
-        if (question.action === null) {
-            question.action = 'update';
+        const indexQuestion = getIndexQuestion(currentId);
+        if(indexQuestion === -1) return;
+        quizEditPayload.questionsCMS[indexQuestion].answersCMS.answerName = value || null;
+        const checkAction = quizEditPayload.questionsCMS[indexQuestion].action;
+        if (checkAction === null) {
+            quizEditPayload.questionsCMS[indexQuestion].action = 'update';
         }
     }
 
@@ -1406,10 +1471,48 @@ function mbFetch(url, data = null){
     });
 }
 
+function initQuillDeboun(selector, placeholder = '', onChangeCallback = null, delay = 300) {
+    let quill = null;
+  
+    function debounce(callback, delay = 300) {
+      let timer;
+      return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          callback.apply(this, args);
+        }, delay);
+      };
+    }
+  
+    function tryInit() {
+      const el = document.querySelector(selector);
+      if (!el) {
+        requestAnimationFrame(tryInit); // Chưa có element thì thử lại ở frame tiếp theo
+        return;
+      }
+  
+      quill = initializeQuill(selector, placeholder);
+  
+      if (typeof onChangeCallback === 'function') {
+        const handler = debounce(function () {
+          let value = quill.root.innerHTML.trim();
+          if(quill.getText().trim() === ''){
+            value = null;
+          }
+          onChangeCallback(value);
+        }, delay);
+  
+        quill.on("text-change", handler);
+      }
+    }
+    requestAnimationFrame(tryInit); // Khởi tạo sau khi DOM sẵn sàng
+    return quill;
+  }
 
-function initializeQuill(selector) {
+function initializeQuill(selector, placeholder = '') {
     return new Quill(selector, {
         theme: 'snow',
+        placeholder: placeholder, 
         modules: {
             toolbar: [
                 [{ 'size': ['small', false, 'large', 'huge'] }], // Thêm font size
@@ -1421,4 +1524,36 @@ function initializeQuill(selector) {
             ]
         }
     });
+}
+
+function checkTextLength(inputText,type = 0) {
+    const charCount = inputText.length;
+    const byteCount = new TextEncoder().encode(inputText).length;
+  
+    let isValid = false;
+    if(type == 'TEXT'){
+        isValid =  byteCount <= 65535;
+    }else if(type == 'MEDIUMTEXT'){
+        isValid =  byteCount <= 16777215;
+    } else if(type == 'LONGTEXT'){
+        isValid =  byteCount <= 4294967295;
+    } else{
+        isValid =  byteCount <= type;
+    }
+
+    return {
+      charCount: charCount,
+      byteCount: byteCount,
+      isValidForMySQL: isValid
+    };
+  }
+  
+function getIndexQuestion(idtmp){
+    return quizEditPayload.questionsCMS.findIndex(q => q.id === idtmp);
+}
+
+function getIndexAnswer(idtmp,idatmp){
+    const indexQuestion = getIndexQuestion(idtmp);
+    if(indexQuestion === -1) return -1;
+    return quizEditPayload.questionsCMS[indexQuestion].answersCMS.findIndex(ans => ans.idatmp === idatmp);
 }

@@ -25,9 +25,9 @@ class QuizzesControllerAdmin{
     function add(){
         $this->quizView->setTitle('Add Quizzes');
         $this->quizView->setActivePage(9,9.1);
-        $this->quizView->addCSS( $this->pathcss . 'addquizadmin.css');
+        $this->quizView->addCSS( $this->pathcss . 'addquizadmin1.css');
         $this->quizView->addCSS( $this->pathcssall . 'quill.css');
-        $this->quizView->addNoModuleJS( $this->pathjs . 'addquizadmin.js');
+        $this->quizView->addNoModuleJS( $this->pathjs . 'addquizadmin1.js');
         $this->quizView->addNoModuleJS( $this->pathjsall . 'quill.js');
         $this->quizView->render();
     }
@@ -35,9 +35,9 @@ class QuizzesControllerAdmin{
     function edit(){
         $this->quizView->setTitle('Update Quizzes');
         $this->quizView->setActivePage(9);
-        $this->quizView->addCSS( $this->pathcss . 'editquizadmin.css');
+        $this->quizView->addCSS( $this->pathcss . 'editquizadmin1.css');
         $this->quizView->addCSS( $this->pathcssall . 'quill.css');
-        $this->quizView->addNoModuleJS( $this->pathjs . 'editquizadmin.js');
+        $this->quizView->addNoModuleJS( $this->pathjs . 'editquizadmin1.js');
         $this->quizView->addNoModuleJS( $this->pathjsall . 'quill.js');
 
         $this->quizView->render();
@@ -46,8 +46,8 @@ class QuizzesControllerAdmin{
     function preview(){
         $this->quizView->setTitle('Preview Quizzes');
         $this->quizView->setActivePage(9);
-        $this->quizView->addCSS( $this->pathcssall . 'Users/quiz1.css');
-        $this->quizView->addJS( $this->pathjs . 'previewquizadmin.js');
+        $this->quizView->addCSS( $this->pathcssall . 'Users/quiz2.css');
+        $this->quizView->addJS( $this->pathjs . 'previewquizadmin1.js');
         $this->quizView->render();
     }
 

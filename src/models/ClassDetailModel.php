@@ -107,9 +107,9 @@ class ClassDetailModel
 
         $sql .= " ORDER BY cl.id DESC";
 
-        if($idCourse === null){
-            $sql .= " limit 10";
-        }
+        // if($idCourse === null){
+        //     $sql .= " limit 10";
+        // }
 
         $stmt = $this->conn->query($sql);
         $result = $stmt->fetch_all(MYSQLI_ASSOC);
@@ -137,7 +137,7 @@ class ClassDetailModel
                 }
             }
         }
-
+        // return $sql;
         return array_values($dataRes);
     }
 

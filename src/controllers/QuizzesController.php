@@ -34,8 +34,8 @@ class QuizzesController
         $quiz = new ViewLayout();
         $quiz->setTitle('Quizzes - Anh Ngữ MB');
         $quiz->setActivePage(5);
-        $quiz->addCSS($this->pathcss . 'quiz1.css');
-        $quiz->addJS($this->pathjs . 'quiz2.js');
+        $quiz->addCSS($this->pathcss . 'quiz2.css');
+        $quiz->addJS($this->pathjs . 'quiz3.js');
         $quiz->render();
     }
 

@@ -16,10 +16,16 @@ class QuestionCMSModel
         $questionName = $dataRow['questionName'];
         $typeAnswer = $dataRow['typeAnswers'];
         $answers = $dataRow['answers'];
+        $note = $dataRow['note']; // note có thể null 
 
         $questionName = $this->conn->real_escape_string($questionName);
+        $noteValue = "NULL";
+        if ($note !== null && trim($note) !== '') {
+            $noteEscaped = $this->conn->real_escape_string($note);
+            $noteValue = "'$noteEscaped'";
+        }
 
-        $sql = "INSERT INTO $this->table (questionName, typeAnswers, idQuizzesCMS) VALUES ('$questionName', $typeAnswer, $idQuizCMS)";
+        $sql = "INSERT INTO $this->table (questionName, typeAnswers, idQuizzesCMS,note) VALUES ('$questionName', $typeAnswer, $idQuizCMS, $noteValue)";
         try {
 
             if (!$this->conn->query($sql)) {
@@ -55,6 +61,7 @@ class QuestionCMSModel
         $sql = "select que.id as idQuestion,
         que.questionName,
         que.typeAnswers as type,
+        que.note,
         ans.id as idAnswer,
         ans.answerName,
         ans.isCorrect
@@ -76,7 +83,8 @@ class QuestionCMSModel
                     'id' => $idQuestion,
                     'questionName' => $item['questionName'],
                     'typeAnswers' => $item['type'],
-                    'answersCMS' => []
+                    'answersCMS' => [],
+                    'note' => $item['note'] // Thêm trường note vào kết quả
                 ];
             }
 
@@ -139,10 +147,17 @@ class QuestionCMSModel
             }
 
             if($action === 'update'){
+                $note = $question['note']; // note có thể null 
+                $noteValue = "NULL";
+                if ($note !== null && trim($note) !== '') {
+                    $noteEscaped = $this->conn->real_escape_string($note);
+                    $noteValue = "'$noteEscaped'";
+                }
                 $type = $question['typeAnswers'];
                 $id = $question['id'];
                 $questionName = $this->conn->real_escape_string($question['questionName']);
                 $updateQuestionName[] = "WHEN id = $id THEN '$questionName'";
+                $updateNote[] = "WHEN id = $id THEN $noteValue";
                 $arrIdQuestionUpdate[] = $id;
                 
                 $answers = $question['answersCMS'];
@@ -184,7 +199,7 @@ class QuestionCMSModel
         }
 
         if(count($arrIdQuestionUpdate) > 0){
-            $sql = "UPDATE $this->table SET questionName = CASE " . implode(' ', $updateQuestionName) . " END WHERE id IN (" . implode(',', $arrIdQuestionUpdate) . ")";
+            $sql = "UPDATE $this->table SET questionName = CASE " . implode(' ', $updateQuestionName) . " END, note = CASE ". implode(' ', $updateNote) . " END WHERE id IN (" . implode(',', $arrIdQuestionUpdate) . ")";
             
             $check = $this->conn->query($sql);
             if (!$check) {

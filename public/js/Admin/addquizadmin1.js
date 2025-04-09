@@ -265,8 +265,7 @@ const removeBorderRed = (e) => {
 const formAddQuiz = document.getElementById('dv-form-addquiz');
 formAddQuiz.addEventListener('submit', async function (e) {
     e.preventDefault();
-    // console.log(Quizzes);
-    // return;
+
     // validate Quizzes để gửi lên server
     if (Quizzes.idLesson === null) {
         mbNotification('Warrning', 'Please choose lesson', 3, 2);
@@ -303,12 +302,23 @@ formAddQuiz.addEventListener('submit', async function (e) {
             document.addEventListener('click', removeBorderRed);
             return;
         }
+
+        const check = checkTextLength(Quizzes.media.content, 'TEXT');
+        if(!check.isValidForMySQL){
+            mbNotification('Warrning', 'Dữ liệu có kích thước quá lớn', 3, 2);
+            const boxMedia = document.querySelector('#box-media');
+            boxMedia.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            boxMedia.classList.add('dv-border-red');
+            document.addEventListener('click', removeBorderRed);
+            return;
+        }
     }
 
     if (Quizzes.questions.length === 0) {
         mbNotification('Warrning', 'Please add question', 3, 2);
         return;
     }
+
 
     for (let i = 0; i < Quizzes.questions.length; i++) {
         const question = Quizzes.questions[i];
@@ -483,21 +493,10 @@ function componentMediaText() {
         Quizzes.media.title = value;
     }
 
-    setTimeout(() => {
-      const quill = initializeQuill(`#contentmedia`);
-      quill.on("text-change", function () {
-        let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
+    const callback = (value) => {
         Quizzes.media.content = value || null;
-      });
-    }, 0);
-
-
-    // const contentText = div.querySelector('.textarea');
-    // contentText.oninput = function (e) {
-    //     let value = e.target.innerHTML;
-    //     Quizzes.media.content = value || null;
-    // }
-
+    }
+    initQuillDeboun('#contentmedia', 'Nội dung bài đọc...', callback,350);
 
     return div;
 }
@@ -621,7 +620,8 @@ function componentQuestionChoose() {
         idtmp: currentId,
         questionName: null,
         typeAnswers: 0,
-        answers: []
+        answers: [],
+        note: null
     };
 
     Quizzes.questions.push(question);
@@ -646,18 +646,27 @@ function componentQuestionChoose() {
                 <div class="dv-add-answer">
                     <button type="button" >+</button>
                 </div>
+                <div class="dv-note">
+                    <div id="dvnote_${currentId}"></div>
+                </div>
     `;
 
     div.innerHTML = html;
 
-    setTimeout(() => {
-      const quill = initializeQuill(`#questionEditor${currentId}`);
-      quill.on("text-change", function () {
-        let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-        question.questionName = value || null; // Gán vào object question
-      });
-    }, 0);
+    const callBackInputQuestion = (value) => {
+        const indexQuestion = getIndexQuestion(currentId);
+        if(indexQuestion === -1) return;
+        Quizzes.questions[indexQuestion].questionName = value || null; // Gán vào object question
+    }
+    initQuillDeboun(`#questionEditor${currentId}`, 'Nhập câu hỏi ở đây...', callBackInputQuestion,350);
 
+    const callBackInputNote = (value) => {
+      console.log(value);
+      let indexQuestion = getIndexQuestion(currentId);
+      if (indexQuestion === -1) return;
+      Quizzes.questions[indexQuestion].note = value || null; // Gán vào object question
+    };
+    initQuillDeboun(`#dvnote_${currentId}`, 'Nhập ghi chú...', callBackInputNote,350);
 
     const answers = div.querySelector('.answers');
     for (let i = 0; i < 4; i++) {
@@ -680,15 +689,6 @@ function componentQuestionChoose() {
 
         const div = document.createElement('div');
         div.classList.add('group-answer');
-        // let html = `
-        //     <input type="radio" name="answer_${currentId}" id="">
-        //     <input type="text" placeholder="Answer">
-        //     <button type="button" class="del-answer">
-        //     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="red" class="size-6">
-        //     <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        //     </svg>
-        //     </button>
-        // `;
 
         let html = `
             <input type="radio" name="answer_${currentId}" id="">
@@ -704,30 +704,23 @@ function componentQuestionChoose() {
 
         div.innerHTML = html;
 
-
-        // const input = div.querySelector('input[type=text]');
-        // input.oninput = function (e) {
-        //     let value = e.target.value;
-        //     value = value.trim();
-        //     // get index from idatmp
-        //     let indexold = question.answers.findIndex(ans => ans.idatmp === idatmp);
-        //     question.answers[indexold].answerName = value || null;
-        // }
-
-        setTimeout(() => {
-            const quill = initializeQuill(`#answerEditor${idatmp}`);
-            quill.on("text-change", function () {
-              let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-                let indexold = question.answers.findIndex(ans => ans.idatmp === idatmp);
-                question.answers[indexold].answerName = value || null;
-            });
-          }, 0);
+        const callBackInputAnswer = (value) => {
+        const indexQuestion = getIndexQuestion(currentId);
+        if(indexQuestion === -1) return;
+        const indexAnswer = getIndexAnswer(currentId, idatmp);
+        if(indexAnswer === -1) return;
+        Quizzes.questions[indexQuestion].answers[indexAnswer].answerName = value || null; // Gán vào object question
+        }
+        initQuillDeboun(`#answerEditor${idatmp}`, 'Nhập câu trả lời ở đây...', callBackInputAnswer,350);
 
         const inputradio = div.querySelector('input[type=radio]');
         inputradio.onchange = function (e) {
-            let indexold = question.answers.findIndex(ans => ans.idatmp === idatmp);
-            question.answers.forEach((ans, i) => {
-                ans.isCorrect = i === indexold;
+            const indexQuestion = getIndexQuestion(currentId);
+            if(indexQuestion === -1) return;
+            const indexAnswer = getIndexAnswer(currentId, idatmp);
+            if(indexAnswer === -1) return;
+            Quizzes.questions[indexQuestion].answers.forEach((ans, i) => {
+                ans.isCorrect = i === indexAnswer;
             });
         }
 
@@ -739,14 +732,17 @@ function componentQuestionChoose() {
                 mbNotification('Warrning', 'Min 2 answer', 3, 2);
                 return;
             }
-            let indexold = question.answers.findIndex(ans => ans.idatmp === idatmp);
 
-            if(question.answers[indexold].isCorrect){
+            let indexQuestion = getIndexQuestion(currentId);
+            if(indexQuestion === -1) return;
+            let indexAnswer = getIndexAnswer(currentId, idatmp);
+            if(indexAnswer === -1) return;
+            if(Quizzes.questions[indexQuestion].answers[indexAnswer].isCorrect){
                 mbNotification('Warrning', 'Can not delete answer correct', 3, 2);
                 return;
             }
 
-            question.answers.splice(indexold, 1);
+            Quizzes.questions[indexQuestion].answers.splice(indexAnswer, 1);
             div.remove();
         }
 
@@ -758,8 +754,6 @@ function componentQuestionChoose() {
         Quizzes.questions = Quizzes.questions.filter(q => q.idtmp !== currentId);
         div.remove();
     }
-
-
     return div;
 }
 
@@ -782,7 +776,8 @@ function componentQuestionTrueFalse() {
                 answerName: "False",
                 isCorrect: false
             }
-        ]
+        ],
+        note: null
     };
 
     Quizzes.questions.push(question);
@@ -810,21 +805,32 @@ function componentQuestionTrueFalse() {
                         <input type="text" placeholder="Answer 2" value="False" disabled>
                     </div>
                 </div>
+                <div class="dv-note">
+                    <div id="dvnote_${currentId}"></div>
+                </div>
     `;
     div.innerHTML = html;
 
-    setTimeout(() => {
-        const quill = initializeQuill(`#questionEditor${currentId}`);
-        quill.on("text-change", function () {
-          let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-          question.questionName = value || null; // Gán vào object question
-        });
-      }, 0);
+    const callBackInputQuestion = (value) => {
+        const indexQuestion = getIndexQuestion(currentId);
+        if (indexQuestion === -1) return;
+        Quizzes.questions[indexQuestion].questionName = value || null; // Gán vào object question
+    }
+    initQuillDeboun(`#questionEditor${currentId}`, 'Nhập câu hỏi ở đây...', callBackInputQuestion,350);
+
+    const callBackInputNote = (value) => {
+      const indexQuestion = getIndexQuestion(currentId);
+      if (indexQuestion === -1) return;
+      Quizzes.questions[indexQuestion].note = value || null; // Gán vào object question
+    };
+    initQuillDeboun(`#dvnote_${currentId}`, 'Nhập ghi chú...', callBackInputNote,350);
 
     const inputradio = div.querySelectorAll('input[type=radio]');
     inputradio.forEach((radio, index) => {
         radio.onchange = function (e) {
-            question.answers.forEach((ans, i) => {
+            const indexQuestion = getIndexQuestion(currentId);
+            if (indexQuestion === -1) return;
+            Quizzes.questions[indexQuestion].answers.forEach((ans, i) => {
                 ans.isCorrect = i === index;
             });
         }
@@ -852,7 +858,8 @@ function componentQuestionWrite() {
         {
             answerName: null,
             isCorrect: true
-        }
+        },
+        note: null
     }
 
     Quizzes.questions.push(question);
@@ -871,22 +878,33 @@ function componentQuestionWrite() {
                 <div id="questionEditor${currentId}" class="editor"></div>
                 </div>
                 <input type="text" placeholder="Answer" name="answer">
+                <div class="dv-note">
+                    <div id="dvnote_${currentId}"></div>
+                </div>
     `;
     div.innerHTML = html;
 
-    setTimeout(() => {
-        const quill = initializeQuill(`#questionEditor${currentId}`);
-        quill.on("text-change", function () {
-          let value = quill.root.innerHTML.trim(); // Lấy nội dung HTML đầy đủ
-          question.questionName = value || null; // Gán vào object question
-        });
-      }, 0);
+    const callBackInputQuestion = (value) => {
+      const indexQuestion = getIndexQuestion(currentId);
+      if (indexQuestion === -1) return;
+      Quizzes.questions[indexQuestion].questionName = value || null; // Gán vào object question
+    };
+    initQuillDeboun(`#questionEditor${currentId}`, 'Nhập câu hỏi ở đây...', callBackInputQuestion,350);
+
+    const callBackInputNote = (value) => {
+      const indexQuestion = getIndexQuestion(currentId);
+      if (indexQuestion === -1) return;
+      Quizzes.questions[indexQuestion].note = value || null; // Gán vào object question
+    };
+    initQuillDeboun(`#dvnote_${currentId}`, 'Nhập ghi chú...', callBackInputNote,350);
 
     const answer = div.querySelector('input[name=answer]');
     answer.oninput = function (e) {
         let value = e.target.value;
         value = value.trim();
-        question.answers.answerName = value || null;
+        const indexQuestion = getIndexQuestion(currentId);
+        if (indexQuestion === -1) return;
+        Quizzes.questions[indexQuestion].answers.answerName = value || null; // Gán vào object question
     }
 
     const btnDel = div.querySelector('button[name=del-question]');
@@ -909,8 +927,6 @@ function emptyElement(element) {
         element.removeChild(element.firstChild);
     }
 }
-
-
 
 
 
@@ -1072,9 +1088,49 @@ function mbFetch(url, data = null){
     });
 }
 
-function initializeQuill(selector) {
+function initQuillDeboun(selector, placeholder = '', onChangeCallback = null, delay = 300) {
+    let quill = null;
+  
+    function debounce(callback, delay = 300) {
+      let timer;
+      return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          callback.apply(this, args);
+        }, delay);
+      };
+    }
+  
+    function tryInit() {
+      const el = document.querySelector(selector);
+      if (!el) {
+        requestAnimationFrame(tryInit); // Chưa có element thì thử lại ở frame tiếp theo
+        return;
+      }
+  
+      quill = initializeQuill(selector, placeholder);
+  
+      if (typeof onChangeCallback === 'function') {
+        const handler = debounce(function () {
+          let value = quill.root.innerHTML.trim();
+          if(quill.getText().trim() === ''){
+            value = null;
+          }
+          onChangeCallback(value);
+        }, delay);
+  
+        quill.on("text-change", handler);
+      }
+    }
+    requestAnimationFrame(tryInit); // Khởi tạo sau khi DOM sẵn sàng
+    return quill;
+  }
+  
+
+function initializeQuill(selector, placeholder = '') {
     return new Quill(selector, {
         theme: 'snow',
+        placeholder: placeholder, 
         modules: {
             toolbar: [
                 [{ 'size': ['small', false, 'large', 'huge'] }], // Thêm font size
@@ -1090,6 +1146,34 @@ function initializeQuill(selector) {
 
 
 
+function checkTextLength(inputText,type = 0) {
+    const charCount = inputText.length;
+    const byteCount = new TextEncoder().encode(inputText).length;
+  
+    let isValid = false;
+    if(type == 'TEXT'){
+        isValid =  byteCount <= 65535;
+    }else if(type == 'MEDIUMTEXT'){
+        isValid =  byteCount <= 16777215;
+    } else if(type == 'LONGTEXT'){
+        isValid =  byteCount <= 4294967295;
+    } else{
+        isValid =  byteCount <= type;
+    }
 
+    return {
+      charCount: charCount,
+      byteCount: byteCount,
+      isValidForMySQL: isValid
+    };
+  }
+  
+function getIndexQuestion(idtmp){
+    return Quizzes.questions.findIndex(q => q.idtmp === idtmp);
+}
 
-
+function getIndexAnswer(idtmp,idatmp){
+    const indexQuestion = getIndexQuestion(idtmp);
+    if(indexQuestion === -1) return -1;
+    return Quizzes.questions[indexQuestion].answers.findIndex(ans => ans.idatmp === idatmp);
+}
